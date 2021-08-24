@@ -6,3 +6,5 @@ Combined with the tool [PlotCritic](https://github.com/jbelyeu/PlotCritic), we f
 CNViz has been packaged as a Nextflow workflow that can be run as it’s own individual pipeline or included as part of another. 
 
 CNViz is obvesously still underdevelopement, it's current version can be found as part of [this pipeline](https://github.com/ryanlayerlab/layer_lab_chco).
+
+<img src="https://github.com/MSBradshaw/CNViz/blob/main/CNViz.png?raw=true" width="600"/>
