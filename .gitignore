@@ -1,0 +1,11 @@
+work/
+Makefile
+PanelMake
+results/
+*__pycache__*
+*sif
+.nextflow.log*
+.nextflow/
+*tsv
+*bed
+*txt
