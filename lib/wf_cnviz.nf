@@ -32,6 +32,46 @@ workflow wf_cnv_build_proband_db{
     db = compile_proband_db.out
 }
 
+workflow wf_cnviz{
+    take: _samples
+    take: _probes
+    take: _all_calls
+    take: _ref_panel
+    take: _genes_file
+    take: _gnomad_sv_file
+    take: _gnomad_sv_file_tbi
+
+    main:    
+    wf_cnv_build_proband_db(_samples, _probes, _all_calls)
+    load_panel_db(_ref_panel)
+    wf_CNViz_compile(wf_cnv_build_proband_db.out.db, load_panel_db.out, _genes_file)
+
+    ids = _samples.map{id,vcf, tbi, bam, bai  -> id}
+    extract_sample_specific_calls(_all_calls.collect(), ids.collect())
+
+    combine_savvy_calls(extract_sample_specific_calls.out)
+
+    _ch_savvy_calls=combine_savvy_calls.out.splitText(){it.split("\t")}.map{ x -> [x[0],x[1],x[2],x[3],x[4]] }
+
+    get_max_number_of_calls(
+        wf_CNViz_compile.out.labeled_exons.collect(),
+        wf_CNViz_compile.out.probe_cover_mean_std.collect(),
+        _ch_savvy_calls,
+        _all_calls.collect())
+        
+    find_max_of_maxes(get_max_number_of_calls.out.splitText().map{it -> it.trim()}.collect())
+    
+    cnv_plotter( wf_CNViz_compile.out.adj_probe_scores,
+        _samples.map{ids, vcf, tbi, bam, bai  -> [vcf,tbi]}.collect(),
+        wf_CNViz_compile.out.labeled_exons,
+        wf_CNViz_compile.out.probe_cover_mean_std.collect(),
+        _ch_savvy_calls,
+        _all_calls.collect(),
+        find_max_of_maxes.out,
+        _gnomad_sv_file,
+        _gnomad_sv_file_tbi)
+}
+
 process load_panel_db{
     label 'container_llab'
     label 'cpus_1'
