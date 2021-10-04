@@ -1,6 +1,7 @@
 work/
 Makefile
 PanelMake
+*Make*
 results/
 *__pycache__*
 *sif
@@ -9,3 +10,5 @@ results/
 *tsv
 *bed
 *txt
+make_neg_sample_list.py
+*.sif

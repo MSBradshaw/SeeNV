@@ -8,7 +8,7 @@ params.tag = 'latest' // Default tag is latest, to be overwritten by --tag <vers
 build_db = params.function == "build_db"? true : false
 
 // include process and workflows from external files
-include {extractSampleInfo; singleColumnFileToChannel} from './lib/utilities' 
+include {extractSampleInfo; singleColumnFileToChannel} from './lib/cnviz_utilities'
 include {wf_cnv_build_panel_db;wf_cnviz} from './lib/wf_cnviz'
 
 // Check if genome exists in the config file
@@ -17,7 +17,7 @@ if (params.genomes && !params.genomes.containsKey(params.genome)) {
 }
 
 // load the sample list
-sample_list_path = params.input
+sample_list_path = params.cnviz_input
 sample_list = file(sample_list_path)
 ch_input_sample = extractSampleInfo(sample_list)
 

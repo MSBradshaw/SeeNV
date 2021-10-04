@@ -182,7 +182,7 @@ def plot_coverage_stats(_ax, _args, _call_colors, _non_samp_pos, _non_samp_xs, _
         lw = 0,
         markersize=1,
         label='Other Sample Coverage',
-        c='#e2e2e2', alpha=.3)
+        c='#a5a5a5', alpha=.5)
         
     _lns1 = _ax.plot(_regions_pos,
         _means,
@@ -320,7 +320,7 @@ def mark_intervals(ax, intervals, color,a=0.25,ymin=0,ymax=1):
 def label_exons(ax, intervals):
     texts = []
     for interval in intervals:
-        texts.append(ax.text(interval.start, 1, interval.data[0] + ' ' + interval.data[1], fontsize=3,rotation=90))
+        texts.append(ax.text(interval.start, 1, interval.data[0] + ' ' + interval.data[1], fontsize=10,rotation=90))
     return texts
 
 def get_savvy_calls(savvy_bed_file, target_sample, target_interval):
@@ -376,9 +376,7 @@ def man_plot(axs, infile, target):
     axs[0].scatter(xs,means,s=.1,color='#5683d6')
     axs[1].scatter(xs,stds,s=.1,color='#5683d6')
 
-    #axs[0].set_ylabel('Mean', fontsize=6)
     axs[0].set_title('Mean', fontsize=6, x=0.0, fontdict={'horizontalalignment': 'left'})
-    #axs[1].set_ylabel('Stdev', fontsize=6)
     axs[1].set_title('Stdev', fontsize=6, x=0.0, fontdict={'horizontalalignment': 'left'})
 
     axs[1].set_xticks(chrm_labels[0])
@@ -405,10 +403,8 @@ def main():
 
 
     samples = utils.get_header(args.scores)[0].split('\t')[4:]
-    print(samples)
-    print(args.sample)
     sample_i = samples.index(args.sample)
-    print(sample_i)
+
     scores = utils.get_intervals_in_region(target_region,
                                            args.scores)
 
@@ -448,7 +444,7 @@ def main():
 
             mean_homs.append((exon.end,gt_stat[0][2]))
             mean_hets.append((exon.end,gt_stat[1][2]))
-    print(0)
+
     # find out the number of extra bed files to be included
     num_additional_beds = 0
     if args.additional_beds:
@@ -467,16 +463,18 @@ def main():
     total_num_plots = num_additional_beds + 5 # 5 is the default number of plots
     fig.set_size_inches(6, total_num_plots)
 
-    gs = fig.add_gridspec(grid_spec_size,1, hspace=1.0, wspace=1.0)
-    #gs1 = fig.add_gridspec(grid_spec_size, 1, hspace=1.00, wspace=1.00)
+    gs = fig.add_gridspec(grid_spec_size, 2, hspace=1.0, wspace=1.0, width_ratios=[10,1])
     first_chr_plot_index = 3 + num_additional_beds
     num_calls_idx = 1
     gnomad_idx = 2
     last_reg_plt_idx = gnomad_idx + num_additional_beds
-    print(1)
-    axs.append(fig.add_subplot(gs[:6,:]))
-    axs.append(fig.add_subplot(gs[6:8,:]))
-    axs.append(fig.add_subplot(gs[8:10,:]))
+    
+    axs.append(fig.add_subplot(gs[:6,0]))
+    axs.append(fig.add_subplot(gs[6:8,0]))
+    axs.append(fig.add_subplot(gs[8:10,0]))
+    # dedicate the second column of the plot as the area for the legends
+    ax_legend0 = fig.add_subplot(gs[:6,1])
+    ax_legend1 = fig.add_subplot(gs[6:8,1])
     if num_additional_beds > 0:
         for i in range(num_additional_beds):
             increase_factor = (i+1) * 2
@@ -488,7 +486,7 @@ def main():
     for a in axs:
         format_axis(a,args)
     ax = axs[0]
-    print(2)
+
     if args.alt_allele_counts and args.alt_allele_headers:
         tbx = pysam.TabixFile(args.alt_allele_counts)
         for line in open(args.alt_allele_headers):
@@ -507,7 +505,7 @@ def main():
         alt_score = list( float(x) for x in alt_info['sample'])
     else:
         alt_score = None
-    print(3)
+
     if alt_score is not None:
         lns10 = ax2.plot(alt_xs,
                    alt_score,
@@ -520,7 +518,7 @@ def main():
         lns10 = None
 
     ax, lns1, lns2b, lns2, all_calls, savvy_calls, xmin, xmax, target_interval = plot_coverage_stats(ax, args, call_colors, non_samp_pos, non_samp_xs, regions_pos, means, stdevs, xs, chrom)
-    print(4)
+
     if args.gnomad_sv:
         gnomad_sv = pysam.TabixFile(args.gnomad_sv) 
         raw_svs = gnomad_sv.fetch(target_interval.chrom, target_interval.start, target_interval.end)
@@ -532,9 +530,8 @@ def main():
                 sv_xs.append(int(row[1]))
                 sv_ys.append(float(y))
         axs[gnomad_idx].scatter(sv_xs, sv_ys, s=.1, marker='*')
-        #axs[gnomad_idx].set_ylabel('Gnomad SV AF', fontsize=6)
         axs[gnomad_idx].set_title('Gnomad SV AF', fontsize=6, x=0.0, fontdict={'horizontalalignment': 'left'})
-    print(5)
+
     if args.additional_beds:
         for i,line in enumerate(open(args.additional_beds,'r')):
             filename = line.strip()
@@ -558,7 +555,6 @@ def main():
                 print('Warning: additional bed', filename, 'has box numeric and non-numeric entries in the 4th column. Treating as all non-numeric')
                 extra_ys = [1] * len(extra_xs)
             axs[gnomad_idx + (i+1)].scatter(extra_xs, extra_ys, s=.1, marker='*')
-            #axs[gnomad_idx + (i+1)].set_ylabel(basename, fontsize=6)
             axs[gnomad_idx + (i+1)].set_title(basename, fontsize=6, x=0.0, fontdict={'horizontalalignment': 'left'})
             if has_discrete:
                 # if they are non-numeric values, hide the y axis ticks
@@ -566,7 +562,7 @@ def main():
                 axs[gnomad_idx + (i+1)].set_yticklabels([' '],)
                 axs[gnomad_idx + (i+1)].xaxis.label.set_color('white')
                 ax_is_discrete[gnomad_idx + (i+1)] = True
-    print(6)
+
     if args.exons:
         probes = []
         for line in open(args.depth,'r'):
@@ -579,7 +575,7 @@ def main():
         
         axs[last_reg_plt_idx].set_xticks(tick_xs)
         axs[last_reg_plt_idx].set_xticklabels(tick_labs,fontsize= 3,)
-        print(7)
+
         legend_elements = []
         colors = call_colors
         markers = ['o', '^', 's', 'P', 'D', '*']
@@ -604,24 +600,22 @@ def main():
                               linewidth=0))
         axs[first_chr_plot_index].set_xticks([])
         axs[first_chr_plot_index].set_xticklabels([])
-        print(8)
-        #axs[num_calls_idx].set_ylabel('Num. Calls',fontsize=6)
+
         axs[num_calls_idx].set_title('Num. Calls', fontsize=6, x=0.0, fontdict={'horizontalalignment': 'left'}) 
         axs[num_calls_idx].tick_params(bottom=False)
-        axs[num_calls_idx].legend(handles=legend_elements,frameon=False,prop={'size': 5},bbox_to_anchor=(1.10,1), borderaxespad=0)
+        # add the legend to the legend column, not the actual plot
+        ax_legend1.legend(handles=legend_elements,frameon=False,prop={'size': 5},bbox_to_anchor=(1.10,1), borderaxespad=0)
         if max(density_of_calls_at_each_probe) < 3 and False:
-            print('Changed!!!')
+
             ticks = list(range(max(density_of_calls_at_each_probe)+1))
             axs[num_calls_idx].set_yticks(ticks)
             axs[num_calls_idx].set_yticklabels(ticks)
-        else:
-            print('no change!!')
-        print(9)
+
         if args.max_num_calls:
             # process this file
             mnc = process_max_num_calls(args.max_num_calls)
             axs[num_calls_idx].set_ylim((axs[num_calls_idx].get_ylim()[0],mnc))
-    print(10)
+
     lns_to_include = [lns1, lns2, lns10, lns2b]
     lns = None
     for x in lns_to_include:
@@ -634,11 +628,11 @@ def main():
     man_plot([axs[first_chr_plot_index],axs[first_chr_plot_index+1]], args.depth, target_region)
     labs = [l.get_label() for l in lns]
     ax.set_ylim([-7, 7])
-    leg = ax.legend(lns,
+    leg = ax_legend0.legend(lns,
                     labs,
                     frameon=False,
                     prop={'size': 5},bbox_to_anchor=(1.10,1), borderaxespad=0)
-    print(11)
+
     for i in  range(0,len(axs)):
         axs[i].tick_params(axis='both', which='major', labelsize=4,length=2,width=.5)
         axs[i].tick_params(axis='both', which='major', labelsize=4,length=2,width=.5)
@@ -657,21 +651,27 @@ def main():
     axs[last_reg_plt_idx].tick_params(axis='x', which='major', labelsize=2, rotation=90)
     axs[last_reg_plt_idx].tick_params(axis='x', which='minor', labelsize=2, rotation=90)
 
-    for i in range(len(axs)):
-        axs[i].spines['top'].set_visible(False)
-        axs[i].spines['right'].set_visible(False)
-        axs[i].spines['bottom'].set_visible(False)
-        axs[i].spines['left'].set_visible(False)
+    for a in axs + [ax_legend0,ax_legend1]:
+        a.spines['top'].set_visible(False)
+        a.spines['right'].set_visible(False)
+        a.spines['bottom'].set_visible(False)
+        a.spines['left'].set_visible(False)
     axs[-1].spines['left'].set_visible(False)
     axs[-1].set_xlabel('Chromosome ' + str(target_region.chrom), fontsize=6)
     axs[last_reg_plt_idx].spines['bottom'].set_visible(True)
+
+    for a in [ax_legend0,ax_legend1]:
+        a.set_xticks([])
+        a.set_yticks([])
+        a.set_xticklabels([])
+        a.set_yticklabels([])
 
     regional_min = min(ax.get_xlim()[0],ax.get_xlim()[0])
     regional_max = max(ax.get_xlim()[1],ax.get_xlim()[1])
 
     mins = []
     maxs = []
-    print(12)
+
     # ensure the chromosomal plots have the same x limits
     for i in range(first_chr_plot_index, len(axs)):
         mins.append(axs[i].get_xlim()[0])
@@ -682,14 +682,14 @@ def main():
     # make sure that all of the regional plots have the same xlimits
     for i in range(last_reg_plt_idx+1):
         axs[i].set_xlim((regional_min,regional_max))
-    print(13)
+
     # rasterize all the points
     for i in range(len(axs)):
         axs[i].set_rasterized(True)
         if i > 0 and i < first_chr_plot_index:
             if not ax_is_discrete[i]:
                 axs[i].grid(axis='y',alpha=.2)
-    print(14)
+
     plt.gca().spines['right'].set_color('none')
     plt.gca().spines['top'].set_color('none')
     plt.gca().spines['left'].set_color('none')
