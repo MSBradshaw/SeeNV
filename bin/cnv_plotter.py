@@ -524,12 +524,14 @@ def main():
         raw_svs = gnomad_sv.fetch(target_interval.chrom, target_interval.start, target_interval.end)
         sv_xs = []
         sv_ys = []
+        sv_x_maxs = []
         for l in raw_svs:
             row = l.strip().split('\t')
             for y in row[37].split(','):
                 sv_xs.append(int(row[1]))
+                sv_x_maxs.append(int(row[2]))
                 sv_ys.append(float(y))
-        axs[gnomad_idx].scatter(sv_xs, sv_ys, s=.1, marker='*')
+        axs[gnomad_idx].hlines(xmin=sv_xs, xmax=sv_x_maxs, y=sv_ys, color='#5683d6', alpha=.5)
         axs[gnomad_idx].set_title('Gnomad SV AF', fontsize=6, x=0.0, fontdict={'horizontalalignment': 'left'})
 
     if args.additional_beds:
