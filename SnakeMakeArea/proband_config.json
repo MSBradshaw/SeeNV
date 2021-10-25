@@ -1,0 +1,6 @@
+{
+  'probes':'workproband/Probes/probes.original.bed',
+  'all_calls':'workproband/Calls/all.calls.original.txt',
+  'gnomad_sv_bed_gz':'workproband/gnomad_sv.bed.gz',
+  'gnomad_sv_bed_gz_tbi':'workproband/gnomad_sv.bed.gz.tbi'
+}

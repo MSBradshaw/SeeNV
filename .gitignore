@@ -2,6 +2,9 @@ work/
 Makefile
 PanelMake
 *Make*
+!SnakeMakeArea
+SnakeMakeArea/work*
+*.bed.gz
 results/
 *__pycache__*
 *sif
@@ -12,3 +15,10 @@ results/
 *txt
 make_neg_sample_list.py
 *.sif
+SnakeMakeArea/*DB*
+SnakeMakeArea/*Panel*
+*log
+SnakeMakeArea/logs
+*.tbi
+SnakeMakeArea/bin
+*/.snakemake

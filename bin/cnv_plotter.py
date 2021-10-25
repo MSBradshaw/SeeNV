@@ -340,6 +340,10 @@ def get_all_savvy_calls_in_target(savvy_bed_file, target_interval, ignore=None):
         sample_calls.append(call)
     return(sample_calls)
 
+def get_all_savvy_call_objects_in_target(savvy_bed_file, target_interval, ignore=None):
+    calls = utils.get_intervals_in_region(target_interval, savvy_bed_file,ignore=ignore)
+    return(calls)
+
 def get_cnvkit_calls(cnvkit_bed_file, target_sample, target_interval):
     calls = utils.get_intervals_in_region(target_interval, cnvkit_bed_file)
     sample_calls = []
@@ -581,18 +585,28 @@ def main():
         legend_elements = []
         colors = call_colors
         markers = ['o', '^', 's', 'P', 'D', '*']
+        call_set = set()
+        files = []
         for i,line in enumerate(open(args.all_calls,'r')):
             f = line.strip()
+            files.append(f)
             try:
                 density_of_calls_at_each_probe = [ len(get_all_savvy_calls_in_target(f,x,ignore=args.sample)) for x in probes]
             except ValueError:
                 print('ValueError in file ' + f)
                 density_of_calls_at_each_probe = [0 for x in probes]
+            for x in probes:
+                tmp_calls = get_all_savvy_call_objects_in_target(f,x,ignore=args.sample)
+                for c in tmp_calls:
+                    curr_sample = c.data[6].split('.')[0] 
+                    call_set.add((c.start, c.end, curr_sample, f))
+            
             x_vals = [ x.start for x in probes]
+            x_vals_end = [ x.end for x in probes]
             indexes = [j for j,x in enumerate(density_of_calls_at_each_probe) if x > 0]
             x_vals = [ x_vals[j] for j in indexes]
             y_vals = [ density_of_calls_at_each_probe[i] for i in indexes]
-            axs[num_calls_idx].scatter(x_vals, y_vals,s=.1,color=colors[i],marker='*')
+            #axs[num_calls_idx].scatter(x_vals, y_vals,s=.1,color=colors[i],marker='*')
             legend_elements.append(Line2D([0], [0],
                               marker='o',
                               color=colors[i],
@@ -600,9 +614,12 @@ def main():
                               markerfacecolor=colors[i],
                               markersize=2,
                               linewidth=0))
+        for i,call in enumerate(call_set):
+            axs[num_calls_idx].hlines(xmin=call[0], xmax=call[1], y=i, color=colors[files.index(call[-1])], alpha=.5)
+
         axs[first_chr_plot_index].set_xticks([])
         axs[first_chr_plot_index].set_xticklabels([])
-
+        print(call_set)
         axs[num_calls_idx].set_title('Num. Calls', fontsize=6, x=0.0, fontdict={'horizontalalignment': 'left'}) 
         axs[num_calls_idx].tick_params(bottom=False)
         # add the legend to the legend column, not the actual plot
