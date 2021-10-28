@@ -4,7 +4,7 @@ channels:
 dependencies:
   - snakemake-minimal >=5.24.1
 # to add
-conda install -c bioconda samtools
-conda install -c bioconda pysam
-conda install -c bioconda bedtools
-conda install matplotlib
+#conda install -c bioconda samtools
+#conda install -c bioconda pysam
+#conda install -c bioconda bedtools
+#conda install matplotlib
