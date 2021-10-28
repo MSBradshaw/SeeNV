@@ -1,6 +1,10 @@
 #!/bin/bash
+# in the installation script ensure that #!/bin/bash is the proper path
+
+threads="1"
+
 # read in command line parameters
-while getopts ":i:p:c:o:r:g:a:" opt; do
+while getopts ":i:p:c:o:r:g:a:t:" opt; do
   case $opt in
     i) inputsamples="$OPTARG"
     ;;
@@ -15,6 +19,8 @@ while getopts ":i:p:c:o:r:g:a:" opt; do
     g) genesfile="$OPTARG"
     ;;
     a) gnomadfile="$OPTARG"
+    ;;
+    t) threads="$OPTARG"
     ;;
     \?) echo "Invalid option -$OPTARG" >&2
     exit 1
@@ -52,4 +58,4 @@ echo $outputdir > workproband/outputdir.txt
 echo $refpanel > workproband/reference_panel.txt
 
 # start the snakemake pipeline now they input files are in there proper locations
-snakemake -c 50 -s run_proband.snake --configfile proband_config.json --printshellcmds --rerun-incomplete
+snakemake -c $threads -s run_proband.snake --configfile proband_config.json --printshellcmds --rerun-incomplete
