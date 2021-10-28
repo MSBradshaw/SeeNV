@@ -32,6 +32,7 @@ done
 # will forably overwrite input files of the same name. All samples named MUST be unique.
 #rm -rf workproband
 mkdir -p workproband
+cp $inputsamples workproband/proband.samples
 cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {3} workproband/{0}.bam"
 cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {4} workproband/{0}.bai"
 cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {5} workproband/{0}.vcf.gz"
@@ -51,4 +52,4 @@ echo $outputdir > workproband/outputdir.txt
 echo $refpanel > workproband/reference_panel.txt
 
 # start the snakemake pipeline now they input files are in there proper locations
-snakemake -c 16 -s run_proband.snake --configfile proband_config.json --printshellcmds
+snakemake -c 50 -s run_proband.snake --configfile proband_config.json --printshellcmds --rerun-incomplete

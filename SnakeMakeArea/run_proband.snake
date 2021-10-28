@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 # Load input files and options
-samples_df = pd.read_csv('../probands.tsv',sep='\t',header=None)
+samples_df = pd.read_csv('workproband/proband.samples',sep='\t',header=None)
 samples_df.columns = ['p_id','s_id','sex','bam','bai','vcf','tbi']
 
 SAMPLES = samples_df['s_id']
@@ -60,7 +60,8 @@ rule all:
 		"workproband/FindMax/all_maxes.txt",
 		expand("workproband/Plots/{num}.png",num=NUM_CALLS),
 		expand("workproband/AdjZscoreRefPanel/{ref_sample}.adj_z.bed.gz", ref_sample=REF_SAMPLES),
-		expand("workproband/AdjZscoreRefPanel/{ref_sample}.adj_z.bed.gz.tbi", ref_sample=REF_SAMPLES)
+		expand("workproband/AdjZscoreRefPanel/{ref_sample}.adj_z.bed.gz.tbi", ref_sample=REF_SAMPLES),
+		expand("workproband/AlleleCount/{sample}.allele_count.tsv", sample=SAMPLES)
 
 
 rule mosdepth:
@@ -75,7 +76,7 @@ rule mosdepth:
 		"""
 		mkdir -p workproband/Mosdepth
 		./bin/mosdepth workproband/Mosdepth/{wildcards.sample} {input}
-		tabix -p bed workproband/Mosdepth/{wildcards.sample}.per-base.bed.gz
+		tabix -f -p bed workproband/Mosdepth/{wildcards.sample}.per-base.bed.gz
 		"""
 
 rule count_reads:
@@ -155,6 +156,8 @@ rule create_plotting_params:
 		"workproband/Params/call_plotting_params.txt"
 	params:
 		samples=expand("{sample}",sample=SAMPLES)
+	log:
+		"workproband/logs/plotting_params.log"
 	shell:
 		"""
 		mkdir -p workproband/Params/
@@ -163,7 +166,7 @@ rule create_plotting_params:
 		done <{input.all_calls}
 		
 		for i in {{1..23}}; do
-			grep "^$i" workproband/Params/tmp_call_plotting_params.txt >> workproband/Params/call_plotting_params.txt.tmp || echo "Not found"
+			grep "^$i" workproband/Params/tmp_call_plotting_params.txt >> workproband/Params/call_plotting_params.txt.tmp || echo "Not found" 2>> {log}
 		done
 
 		# remove samples from the calls that are not in the sample list
@@ -372,7 +375,7 @@ rule prep_all_calls:
 			array=( {params.samples} )
 			for i in "${{array[@]}}"
 			do
-				grep $i $p >> workproband/FindMaxTMP/$name.filtered 2>> {log}
+				cat $p | {{ grep $i || :; }} >> workproband/FindMaxTMP/$name.filtered 2>> {log}
 			done
 
 			bedtools sort -i workproband/FindMaxTMP/$name.filtered > workproband/FindMaxTMP/$name.sorted 2>> {log}
@@ -451,8 +454,12 @@ rule plotter:
 		"workproband/Plots/{num}.png"
 	log:
 		"workproband/logs/plotting_{num}.log"
+	params:
+		num_calls=len(NUM_CALLS)
 	shell:
 		"""
+		echo {params.num_calls} >> {log}
+		echo {wildcards.num} >> {log}
 		mkdir -p workproband/FindMax/ 2>> {log}
 
 		string=$(head -1 {input.param_file}) 2>> {log}
@@ -486,5 +493,14 @@ rule plotter:
 		"""
 
 
-
+rule collect_allele_counts:
+	input:
+		bam="workproband/{sample}.bam",
+		probes=config['probes']
+	output:
+		"workproband/AlleleCount/{sample}.allele_count.tsv"
+	resources:
+		mem_mb=20000
+	shell: "mkdir -p workproband/AlleleCount; touch {output}"
+	
 
