@@ -79,12 +79,45 @@ def get_build_args():
     parser.add_argument('-s',dest='sites',help='genomic sites bed file',required=True)
     parser.add_argument('-c',dest='all_calls',help='calls file. Each line should be a path to a set of calls in bed format',required=True)
     parser.add_argument('-o',dest='output',help='output directory, reference panel database',required=True)
+    parser.add_argument('-t',dest='threads',help='number of threads to use, default 1 (you really want to use more than 1)',default="1",required=False)
     return parser.parse_args()
 
 run_type, args = get_args()
 if run_type == 'plotsamples':
     print('Plotting')
-    command='./start_proband.sh -i {samples}  -p {probes} -c {calls} -o {out} -r {ref_db} -g {genes_file} -a {af} -t {threads}'
+    command="""
+    inputsamples="{samples}"
+    probes="{probes}"
+    calls="{calls}"
+    genesfile="{genes_file}"
+    gnomadfile="{af}"
+    outputdir="{out}"
+    refpanel="{ref_db}"
+    threads="{threads}"
+
+    mkdir -p workproband
+    cp $inputsamples workproband/proband.samples
+    cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{3}} workproband/{{0}}.bam"
+    cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{4}} workproband/{{0}}.bai"
+    cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{5}} workproband/{{0}}.vcf.gz"
+    cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{6}} workproband/{{0}}.vcf.gz.tbi"
+
+    mkdir -p workproband/Probes
+    ln -s "$(cd "$(dirname "$probes")"; pwd)/$(basename "$probes")" workproband/Probes/probes.original.bed
+    mkdir -p workproband/Calls
+    ln -s "$(cd "$(dirname "$calls")"; pwd)/$(basename "$calls")" workproband/Calls/all.calls.original.txt
+    ln -s "$(cd "$(dirname "$genesfile")"; pwd)/$(basename "$genesfile")" workproband/genes.bed.gz
+    ln -s "$(cd "$(dirname "$gnomadfile")"; pwd)/$(basename "$gnomadfile")" workproband/gnomad_sv.bed.gz
+    ln -s "$(cd "$(dirname "$gnomadfile")"; pwd)/$(basename "$gnomadfile")".tbi workproband/gnomad_sv.bed.gz.tbi
+
+    # put the name of the output dirrectory into a textfile for Snakemake to read in
+    echo $outputdir > workproband/outputdir.txt
+    # put the path to the reference panel into a textfie for Snakemake to read in
+    echo $refpanel > workproband/reference_panel.txt
+    
+    # start the snakemake pipeline now they input files are in there proper locations
+    snakemake -c $threads -s run_proband.snake --configfile proband_config.json --printshellcmds --rerun-incomplete
+    """
     command = command.format(samples=args.input_samples,
                     probes=args.sites,
                     calls=args.all_calls,
@@ -95,6 +128,34 @@ if run_type == 'plotsamples':
                     threads=args.threads)
 elif run_type == 'buildref':
     print('Building')
+    command="""
+    inputsamples="{samples}"
+    probes="{probes}"
+    calls="{calls}"
+    outputdir="{out}"
+    threads="{threads}"
+
+    # create the workpanel dir, dump sym linked files in to a location they can be easily accessed by SnakeMake 
+    # will forably overwrite input files of the same name. All samples named MUST be unique.
+    mkdir -p workpanel
+    cp $inputsamples workpanel/panel.samples
+    cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{3}} workpanel/{{0}}.bam"
+    cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{4}} workpanel/{{0}}.bai"
+    cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{5}} workpanel/{{0}}.vcf.gz"
+    cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{6}} workpanel/{{0}}.vcf.gz.tbi"
+ 
+    mkdir -p workpanel/Probes
+    ln -f -s "$(cd "$(dirname "$probes")"; pwd)/$(basename "$probes")" workpanel/Probes/probes.original.bed
+    mkdir -p workpanel/Calls
+    ln -f -s "$(cd "$(dirname "$calls")"; pwd)/$(basename "$calls")" workpanel/Calls/all.calls.original.txt
+    
+    # put the name of the output dirrectory into a textfile for Snakemake to read in
+    echo $outputdir > workpanel/outputdir.txt
+
+    # start the snakemake pipeline now they input files are in there proper locations
+    snakemake -c $threads -s build_panel.snake --configfile panel_config.json
+    """
+    command = command.format(samples=args.input_samples,probes=args.sites,calls=args.all_calls,out=args.output,threads=args.threads)
 else:
     print('Internal Error, unexpected run_type')
     exit(1)
