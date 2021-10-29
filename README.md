@@ -1,5 +1,11 @@
 <p align="center"><img src="https://github.com/MSBradshaw/CNViz/blob/main/Logo.png?raw=true" width="80%"/></p>
 
+CNViz is still being developed. It is can be download and used but is by no means exaustively tested. 
+
+Find a bug? Create an [issue](https://github.com/MSBradshaw/CNViz/issues)! 
+
+Have a feature idea? Create an [issue](https://github.com/MSBradshaw/CNViz/issues)!
+
 CNViz provides comprehensive yet easy to digest visualizations for each call in a sample and depicts relevant statistics comparing a sample to a cohort of other samples. 
 It is known that the accuracy and reliability of CNV calls increases when using multiple callers and parameter sets, for this reason CNViz also provides a way to visualize multiple callers or bin sizes simultaneously — a feature not known to exist in other tools. 
 Combined with the tool [PlotCritic](https://github.com/jbelyeu/PlotCritic), we found that a clinician can accurately filter through roughly 200 calls in 20 minutes, or just 6 seconds per call on average. 
@@ -11,45 +17,89 @@ CNViz has been packaged as a Nextflow workflow that can be run as it’s own ind
 
 Poster Presentation from Genome Informatics 2021
 
-## Installation
+# Installation
 
-CNViz depends on just two things
+CNViz is currently only usable on Linux based systems. 
 
-1. [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html)
-2. [Singularity](https://sylabs.io/guides/3.0/user-guide/quick_start.html#quick-installation-steps)
+CNViz requires you have [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) installed.
 
-All other dependancies and packages are contained in a single singularity container.
+Download this repo:
 
-Clone this repo
+`git install git@github.com:MSBradshaw/CNViz.git`
 
-`git clone git@github.com:MSBradshaw/CNViz.git`
+Move into the repo:
 
-Build singularity container (this will require sudo privlidges)
+`cd CNViz`
 
-`cd CNViz/Singularity`
+Run the install script:
 
-`bash build.sh`
+`source install.sh`
 
-or if you do not have sudo privlidges, download a prebuilt version of the container from [here](https://drive.google.com/file/d/1qaX7MfytQttYyVetnVdtoHtfx7woTpf4/view?usp=sharing):
+The install script will create a conda envrionment called `cnviz` with all the necessary python dependancies for CNViz. It will also download a the following external non-python tools:
 
-## Configuration
+[Snakemake](https://snakemake.readthedocs.io/en/stable/index.html)
 
-Nextflow requires some configuration. This part of the documentation is forth coming. If you happen to be experienced with nextflow already, AWESOME! You probbaly already know what to do!
+[gargs](https://github.com/brentp/gargs)
 
-## Usuage
+[mosdepth](https://github.com/brentp/mosdepth)
 
-In order to use CNViz a reference panel DB is required. You can either use your own, or use this example one provided here (sorry the example I am legally allowed to publicly share is forth coming):
+[samtools](http://www.htslib.org/)
 
-### Build your own reference panel DB
+[bedtools](https://bedtools.readthedocs.io/en/latest/)
 
+All these dependacies will be placed in the bin direcoty of the cnviz conda environment.
+
+As long as the conda environemnt is activated the `cnviz` command can now be used anywhere.
+
+# Usage
+
+CNViz requires it's conda environment to work, start the conda environment:
+
+`conda activate cnviz`
+
+## Build a Reference DB
+
+```
 TODO
+```
 
-### Run CNViz pipeline for probands
+## Generate plots
 
-TODO
+```
+cnviz \
+-i cohort.samples \
+-p probes.bed \
+-c all_calls.txt \
+-o OutputDir \
+-r RefPanel \
+-g Homo_sapiens.GRCh37.82.genes.bed.gz \
+-a gnomad_v2.1_sv.sites.bed.gz \
+-t 50
+```
 
-TODO: pretty example output pictures
+## Parameter explaination
+```
+One of the following options is required
+
+--buildref, -b      flag to use function to build a reference panel database
+--plotsamples, -p   flag to plot samples
+
+Parameters to accompany --plotsamples, -p:
+    -i INPUT_SAMPLES   (required) samples list
+    -s SITES           (required) genomic sites bed file
+    -c ALL_CALLS       (required) calls file. Each line should be a path to a set of calls in bed format
+    -o OUTPUT          (required) output directory, where to save the plots
+    -r REF_DB          (required) path to reference db created by the --buildref function of CNViz
+    -g GENES_FILE      (required) a bed format genes file
+    -a GNOMAD          (required) the gnomad sv sites file with allele frequency information
+    -t THREADS         (optional) number of threads to use, default 1 (you really want to use more than 1)
+
+Parameters to accompany --buildref, -b
+    -i INPUT_SAMPLES  (required) samples list
+    -s SITES          (required) genomic sites bed file
+    -c ALL_CALLS      (required) calls file. Each line should be a path to a set of calls in bed format
+    -o OUTPUT         (required) output directory, reference panel database
+    -t THREADS        (optional) number of threads to use, default 1 (you really want to use more than 1)
+```
 
 
-
-<img src="https://github.com/MSBradshaw/CNViz/blob/main/CNViz.png?raw=true" width="600"/>
