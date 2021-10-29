@@ -21,3 +21,5 @@ cp bin/*.py $conda_bin
 wget https://github.com/brentp/gargs/releases/download/v0.3.9/gargs_linux
 chmod 770 gargs_linux
 mv gargs_linux $conda_bin/gargs
+
+cp cnviz.py $conda_bin/cnviz

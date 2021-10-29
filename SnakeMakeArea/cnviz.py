@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import argparse
 import sys
 import os
@@ -84,7 +85,6 @@ def get_build_args():
 
 run_type, args = get_args()
 if run_type == 'plotsamples':
-    print('Plotting')
     command="""
     inputsamples="{samples}"
     probes="{probes}"

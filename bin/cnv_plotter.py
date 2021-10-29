@@ -1,4 +1,4 @@
-#!/opt/miniconda/envs/chco/bin/python
+#!/usr/bin/env python
 import argparse
 import utils
 import matplotlib.pyplot as plt
@@ -151,6 +151,19 @@ def get_args():
 
 def process_max_num_calls(file_name):
     try:
+        nums = []
+        for line in open(file_name,'r'):
+            nums.append(int(line.strip()))
+        return max(nums)
+    except FileNotFoundError:
+        if file_name.isnumeric():
+            return float(file_name)
+        else:
+            raise Exception("the parameter --max_num_calls is not a properly formated file or numerical value")
+
+"""
+def process_max_num_calls(file_name):
+    try:
         info = None
         for line in open(file_name,'r'):
             info = line
@@ -165,7 +178,7 @@ def process_max_num_calls(file_name):
         else:
             raise Exception("the parameter --max_num_calls is not a properly formated file or numerical value")
             return -1
-
+"""
 
 def plot_coverage_stats(_ax, _args, _call_colors, _non_samp_pos, _non_samp_xs, _regions_pos, _means, _stdevs, _xs, _chrom):
     if _args.title:
@@ -596,7 +609,11 @@ def main():
                 print('ValueError in file ' + f)
                 density_of_calls_at_each_probe = [0 for x in probes]
             for x in probes:
-                tmp_calls = get_all_savvy_call_objects_in_target(f,x,ignore=args.sample)
+                try:
+                    tmp_calls = get_all_savvy_call_objects_in_target(f,x,ignore=args.sample)
+                except ValueError:
+                    print("Region",str(x),"cannot befound in",f)
+                    tmp_calls = []
                 for c in tmp_calls:
                     curr_sample = c.data[6].split('.')[0] 
                     call_set.add((c.start, c.end, curr_sample, f))

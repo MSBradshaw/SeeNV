@@ -75,7 +75,7 @@ rule mosdepth:
 	shell:
 		"""
 		mkdir -p workproband/Mosdepth
-		./bin/mosdepth workproband/Mosdepth/{wildcards.sample} {input}
+		mosdepth workproband/Mosdepth/{wildcards.sample} {input}
 		tabix -f -p bed workproband/Mosdepth/{wildcards.sample}.per-base.bed.gz
 		"""
 
@@ -137,7 +137,7 @@ rule get_probe_reads_per_million:
 		"workproband/RPM/{sample}.probe.rpm_rate.bed.gz.tbi"
 	shell:
 		"""
-		python bin/get_rpm_rates.py \
+		get_rpm_rates.py \
 		-m {input.per_base_bed_gz} \
 		--regions_file {input.probes_gz} \
 		--num_reads {input.total_reads} \
@@ -169,11 +169,12 @@ rule create_plotting_params:
 			grep "^$i" workproband/Params/tmp_call_plotting_params.txt >> workproband/Params/call_plotting_params.txt.tmp || echo "Not found" 2>> {log}
 		done
 
+		touch workproband/Params/call_plotting_params.txt
 		# remove samples from the calls that are not in the sample list
 		array=( {params.samples} )
 		for j in "${{array[@]}}"
 		do
-			grep $j workproband/Params/call_plotting_params.txt.tmp >> workproband/Params/call_plotting_params.txt
+			cat workproband/Params/call_plotting_params.txt.tmp | {{ grep $j || :; }} >> workproband/Params/call_plotting_params.txt
 		done
 		"""
 
@@ -191,7 +192,6 @@ checkpoint split_param_file:
 		"workproband/logs/split_param_file.log"
 	shell:
 		"""
-		echo "STUFF"
 		mkdir -p workproband/SplitParams
 		i=0
 		while read p; do
@@ -230,7 +230,7 @@ rule label_exons:
 		"workproband/Exons/labeled_exons.bed.gz.tbi"
 	shell:
 		"""
-		zcat {input} | python bin/label_exon_number.py > workproband/Exons/labeled_exons.bed
+		zcat {input} | label_exon_number.py > workproband/Exons/labeled_exons.bed
 		bgzip workproband/Exons/labeled_exons.bed
 		tabix -p bed workproband/Exons/labeled_exons.bed.gz
 		"""
@@ -267,7 +267,7 @@ rule get_probe_cover_mean_std:
 		bed="workproband/ProbeCoverage/{sample}_probe.cover.mean.stdev.bed"
 	shell:
 		"""
-		python bin/get_regions_zscores.py -r workproband/ProbeCoverageRefPanel/ -s {input.proband_rpm} | bgzip -c > {output.bedgz}
+		get_regions_zscores.py -r workproband/ProbeCoverageRefPanel/ -s {input.proband_rpm} | bgzip -c > {output.bedgz}
 		cp {output.bedgz} workproband/ProbeCoverage/{wildcards.sample}_probe.cover.mean.stdev.copy.bed.gz
 		gunzip workproband/ProbeCoverage/{wildcards.sample}_probe.cover.mean.stdev.copy.bed.gz
 		mv workproband/ProbeCoverage/{wildcards.sample}_probe.cover.mean.stdev.copy.bed {output.bed}
@@ -290,7 +290,7 @@ rule get_probe_cover_mean_std_for_reference_panel:
 	shell:  
 		"""
 		mkdir -p workproband/ProbeCoverageRefPanel
-		python bin/get_regions_zscores.py -r workproband/ProbeCoverageRefPanel/ -s {input.ref_sample} | bgzip -c > {output.bedgz}
+		get_regions_zscores.py -r workproband/ProbeCoverageRefPanel/ -s {input.ref_sample} | bgzip -c > {output.bedgz}
 		cp {output.bedgz} workproband/ProbeCoverageRefPanel/{wildcards.ref_sample}_probe.cover.mean.stdev.copy.bed.gz
 		gunzip workproband/ProbeCoverageRefPanel/{wildcards.ref_sample}_probe.cover.mean.stdev.copy.bed.gz
 		mv workproband/ProbeCoverageRefPanel/{wildcards.ref_sample}_probe.cover.mean.stdev.copy.bed {output.bed}
@@ -310,7 +310,7 @@ rule get_adj_zscore:
 		tbi="workproband/AdjZscore/{sample}.adj_z.bed.gz.tbi"
 	shell:
 		"""
-		python bin/get_coverage_zscores.py \
+		get_coverage_zscores.py \
 			-r {input.proband_rpm} \
 			-s {input.proband_coverage} \
 			| bgzip -c > {output.bedgz}
@@ -332,7 +332,7 @@ rule get_adj_zscore_for_ref_panel:
 	shell:
 		"""
 		mkdir -p workproband/AdjZscoreRefPanel
-		python bin/get_coverage_zscores.py \
+		get_coverage_zscores.py \
 			-r {input.ref_sample_rpm} \
 			-s {input.ref_sample_coverage} \
 			| bgzip -c > {output.bedgz}
@@ -354,7 +354,7 @@ rule merge_adj_scores:
 		final_bed_gz_tbi="workproband/MergedAdjZscore/adj_scores.bed.gz.tbi"
 	shell:
 		"""
-		python bin/merge_samples_adj_scores.py -r workproband/AdjZscore/ | bgzip -c > {output.final_bed_gz}
+		merge_samples_adj_scores.py -r workproband/AdjZscore/ | bgzip -c > {output.final_bed_gz}
 		tabix -p bed {output.final_bed_gz}
 		"""
 
@@ -415,9 +415,7 @@ rule find_max:
 		regionclean=$(cut -d" " -f5 <<< $string) 2>> {log}
 		svtype2=$(cut -d" " -f6 <<< $string) 2>> {log}
 
-		echo "here" 2>> {log}
-
-		python bin/get_max_number_of_calls.py --sample ${{samplename%.*}} \
+		get_max_number_of_calls.py --sample ${{samplename%.*}} \
 			--exons {input.exons} \
 			--window 100000 \
 			--region ${{region}} \
@@ -472,9 +470,7 @@ rule plotter:
 		regionclean=$(cut -d" " -f5 <<< $string) 2>> {log}
 		svtype2=$(cut -d" " -f6 <<< $string) 2>> {log}
 
-		echo "here" 2>> {log}
-
-		python bin/cnv_plotter.py \
+		cnv_plotter.py \
 			--sample ${{samplename%.*}} \
 			--vcf workproband/${{samplename%.*}}.vcf.gz \
 			-o {output} \

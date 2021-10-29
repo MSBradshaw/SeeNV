@@ -1,4 +1,4 @@
-#!/opt/miniconda/envs/chco/bin/python
+#!/usr/bin/env python
 import argparse
 import utils
 import pandas as pd
@@ -6,6 +6,7 @@ import numpy as np
 import pysam
 import statistics
 from random import randrange
+import sys
 
 def get_args():
     parser = argparse.ArgumentParser()

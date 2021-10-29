@@ -14,6 +14,12 @@ def get_args():
                         required=True,
                         help='Path to directory containing rate files')
 
+    parser.add_argument('-s',
+    dest='single_sample',
+    required=False,
+    default=None,
+    help='Path to single sample file to be compared to everything in rate dir')
+
     args = parser.parse_args()
 
     return args
@@ -27,7 +33,11 @@ def main():
 
     file_i = 0
 
-    for rate_file in glob.glob(args.rate_dir + '*.probe.*.bed.gz'):
+    all_files = list(glob.glob(args.rate_dir + '*.probe.*.bed.gz'))
+    if args.single_sample is not None:
+        all_files.append(args.single_sample)
+
+    for rate_file in all_files:
         with gzip.open(rate_file,'rt') as f:
             line_i = 0
             for l in f:
