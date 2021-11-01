@@ -60,7 +60,13 @@ CNViz requires it's conda environment to work, start the conda environment:
 ## Build a Reference DB
 
 ```
-TODO
+cnviz \
+-b \
+-i panel.samples \
+-s ../WES_TargetCoverage_v2.bed \
+-c ../all_calls.txt \
+-o DELDELDEL \
+-t 32
 ```
 
 ## Generate plots
