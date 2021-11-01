@@ -73,9 +73,10 @@ cnviz \
 
 ```
 cnviz \
--i cohort.samples \
--p probes.bed \
--c all_calls.txt \
+-p \
+-i Example/cohort.samples \
+-s Example/probes.bed \
+-c Example/all_calls.txt \
 -o OutputDir \
 -r RefPanel \
 -g Homo_sapiens.GRCh37.82.genes.bed.gz \
@@ -107,5 +108,46 @@ Parameters to accompany --buildref, -b
     -o OUTPUT         (required) output directory, reference panel database
     -t THREADS        (optional) number of threads to use, default 1 (you really want to use more than 1)
 ```
+
+## `-i INPUT_SAMPLES`
+
+Same format for samples and reference panel. See `Example/panel.samples` or `Example/cohort.samples`
+
+TSV file with the following columns in this order:
+
+Patient Id: Unique identifier for each patient
+
+Sample Id: Unique identifier for each sample (can be the same as the sample's Patient Id)
+
+Sex: Chromosomal sex of patient (e.g. XY or XX). If unknown just input ZZ.
+
+BAM: path to the sample's .bam file
+
+BAI: path to the sample's .bai file
+
+VCF: path to the sample's .vcf file
+
+TBI: path to the sample's .vcf.tbi file
+
+## `-s SITES`
+
+[BED](https://genome.ucsc.edu/FAQ/FAQformat.html#format1) formatted file with sites of interest within the genome. We use the regions our probes target for whole exome sequencing. See `Example/probes.bed`
+
+## `-c ALL_CALLS `
+
+File that contains a list of files containing calls. See `Example/all_calls.txt`.
+
+Each file contains the path to a set of calls in a bed file with the following information seporated by tabs:
+
+Chromosome: the Chromosome number/name (if listing chromsome 1 input 1 not chr1)
+
+Start: base number at which the calls starts
+
+End: base number at which the calls ends
+
+Call type: type of call made (Duplication, Deletion ect)
+
+Sample Id: Sample Id the call pertains to, should match Sample Id's found in `-i INPUT_SAMPLES` 
+
 
 
