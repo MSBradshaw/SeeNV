@@ -3,6 +3,7 @@ Makefile
 PanelMake
 *Make*
 !SnakeMakeArea
+!SnakeMakeArea/Example
 SnakeMakeArea/work*
 *.bed.gz
 results/
