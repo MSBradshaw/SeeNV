@@ -59,6 +59,8 @@ CNViz requires it's conda environment to work, start the conda environment:
 
 ## Build a Reference DB
 
+In order to generate plots, a reference panel database is required. You can either create your own or use the one included with this repository.
+
 ```
 cnviz \
 -b \
@@ -149,5 +151,34 @@ Call type: type of call made (Duplication, Deletion ect)
 
 Sample Id: Sample Id the call pertains to, should match Sample Id's found in `-i INPUT_SAMPLES` 
 
+## `-o OUTPUT`
 
+When using the `-b` or `--buildref` flag `-o` will is the path to where you want the reference panel database (a dirrectory) saved.
 
+When using the `-p` or `--plotsamples` flag `-o` is the path for where the plots will be saved.
+
+## `-r REF_DB`
+
+Path to a reference panel database (the output created when using the `-b` flag)
+
+## `-g GENES_FILE`
+
+Path to a gzipped or bgzipped bed formated file file with the columns:
+
+Chromosome: the Chromosome number/name (if listing chromsome 1 input 1 not chr1)
+
+Start: base number at which the calls starts
+
+End: base number at which the calls ends
+
+Gene symbol: the gene symbol
+
+You can either download data and format it from [biomart](http://uswest.ensembl.org/biomart/martview/) or use our HG19 based verion found in Example/hg19.genes.bed.gz
+
+## `-a GNOMAD with Allele Frequency data`
+
+path to the gnomAD SV sites file in .beg.gz format with an accompanying .beg.gz.tbi file in the same dirrectory. Download [.beg.gz file](https://storage.googleapis.com/gcp-public-data--gnomad/papers/2019-sv/gnomad_v2.1_sv.sites.bed.gz) and [.beg.gz.tbi](https://storage.googleapis.com/gcp-public-data--gnomad/papers/2019-sv/gnomad_v2.1_sv.sites.bed.gz.tbi)
+
+## `-t THREADS`
+
+The number of _cores_ (not threads) to be used. Default is 1, but you really should use many more. For reference, using 32 cores, the provided reference panel database, and processing/plotting 6 samples with 300 calls takes us ~2 hours.
