@@ -48,7 +48,7 @@ def get_all_savvy_calls_in_target(savvy_bed_file, target_interval, ignore=None):
     calls = utils.get_intervals_in_region(target_interval, savvy_bed_file,ignore=ignore)
     sample_calls = []
     for call in calls:
-        curr_sample = call.data[6].split('.')[0]
+        curr_sample = call.data[1].split('.')[0]
         sample_calls.append(call)
     return(sample_calls)
 

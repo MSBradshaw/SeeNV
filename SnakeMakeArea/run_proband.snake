@@ -162,7 +162,7 @@ rule create_plotting_params:
 		"""
 		mkdir -p workproband/Params/
 		while read p; do
-			cat $p | awk -v VAR=$p '{{ print $1":"$2"-"$3"\t"$4"\t"$10"\t"VAR"\t"$1"."$2"-"$3"\t"$4}}' >> workproband/Params/tmp_call_plotting_params.txt
+			cat $p | awk -v VAR=$p '{{ print $1":"$2"-"$3"\t"$4"\t"$5"\t"VAR"\t"$1"."$2"-"$3"\t"$4}}' >> workproband/Params/tmp_call_plotting_params.txt
 		done <{input.all_calls}
 		
 		for i in {{1..23}}; do

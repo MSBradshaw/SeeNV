@@ -340,7 +340,7 @@ def get_savvy_calls(savvy_bed_file, target_sample, target_interval):
     calls = utils.get_intervals_in_region(target_interval, savvy_bed_file)
     sample_calls = []
     for call in calls:
-        curr_sample = call.data[6].split('.')[0]
+        curr_sample = call.data[1].split('.')[0]
         if curr_sample == target_sample:
             sample_calls.append(call)
     return(sample_calls)
@@ -349,7 +349,7 @@ def get_all_savvy_calls_in_target(savvy_bed_file, target_interval, ignore=None):
     calls = utils.get_intervals_in_region(target_interval, savvy_bed_file,ignore=ignore)
     sample_calls = []
     for call in calls:
-        curr_sample = call.data[6].split('.')[0]
+        curr_sample = call.data[1].split('.')[0]
         sample_calls.append(call)
     return(sample_calls)
 
@@ -537,7 +537,14 @@ def main():
     ax, lns1, lns2b, lns2, all_calls, savvy_calls, xmin, xmax, target_interval = plot_coverage_stats(ax, args, call_colors, non_samp_pos, non_samp_xs, regions_pos, means, stdevs, xs, chrom)
 
     if args.gnomad_sv:
-        gnomad_sv = pysam.TabixFile(args.gnomad_sv) 
+        for i in range(2):
+            try:
+                gnomad_sv = pysam.TabixFile(args.gnomad_sv) 
+                break
+            except OSError:
+                pass
+                # this is to enable retries is the file is occupied
+            
         raw_svs = gnomad_sv.fetch(target_interval.chrom, target_interval.start, target_interval.end)
         sv_xs = []
         sv_ys = []
@@ -615,7 +622,7 @@ def main():
                     print("Region",str(x),"cannot befound in",f)
                     tmp_calls = []
                 for c in tmp_calls:
-                    curr_sample = c.data[6].split('.')[0] 
+                    curr_sample = c.data[1].split('.')[0] 
                     call_set.add((c.start, c.end, curr_sample, f))
             
             x_vals = [ x.start for x in probes]
