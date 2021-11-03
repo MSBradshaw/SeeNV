@@ -1,4 +1,4 @@
-<p align="center"><img src="https://github.com/MSBradshaw/CNViz/blob/main/Logo.png?raw=true" width="80%"/></p>
+<p align="center"><img src="https://github.com/MSBradshaw/CNViz/blob/main/Imgs/Logo.png?raw=true" width="80%"/></p>
 
 CNViz is still being developed. It is can be download and used but is by no means exaustively tested. 
 
@@ -12,7 +12,7 @@ Combined with the tool [PlotCritic](https://github.com/jbelyeu/PlotCritic), we f
 CNViz has been packaged as a Nextflow workflow that can be run as it’s own individual pipeline or included as part of another. 
 
 
-<p align="center"><img src="https://github.com/MSBradshaw/CNViz/blob/main/CNVizPoster.png?raw=true" width="100%"/></p>
+<p align="center"><img src="https://github.com/MSBradshaw/CNViz/blob/main/Imgs/CNVizPoster.png?raw=true" width="100%"/></p>
 
 
 Poster Presentation from Genome Informatics 2021
