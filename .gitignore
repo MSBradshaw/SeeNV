@@ -25,3 +25,5 @@ SnakeMakeArea/bin
 */.snakemake
 *samples
 DEL/
+.snakemake/
+work*
