@@ -1,2 +1,3 @@
-cnv_plotter.py --sample WES104_S31 --vcf workproband/WES104_S31.vcf.gz -o workproband/Plots/42.png --scores workproband/MergedAdjZscore/adj_scores.bed.gz 			--exons workproband/Exons/labeled_exons.bed.gz --window 100000 --region 22:39358250-39388250 --height 7 --width 5 			--label_exons 			--title "WES104_S31 22:39358250-39388250 Duplication" --depth workproband/ProbeCoverage/WES104_S31_probe.cover.mean.stdev.bed --max_num_calls workproband/FindMax/all_maxes.txt --gnomad_sv workproband/gnomad_sv.bed.gz --all_calls workproband/FindMaxTMP/multiple_savvy_calls.txt
-
+set -euo pipefail
+IFS=$'\n\t'
+get_rpm_rates.py -m workproband/Mosdepth/WES88_S29.per-base.bed.gz --regions_file workproband/Probes/probes.sorted.bed.gz --num_reads workproband/TotalReads/total_read.txt | bgzip -c > workproband/RPM/WES88_S29.probe.rpm_rate.bed.gz

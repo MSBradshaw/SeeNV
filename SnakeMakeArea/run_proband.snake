@@ -470,7 +470,8 @@ rule plotter:
 		regionclean=$(cut -d" " -f5 <<< $string) 2>> {log}
 		svtype2=$(cut -d" " -f6 <<< $string) 2>> {log}
 
-		cnv_plotter.py \
+		#cnv_plotter.py \
+		python bin/cnv_plotter2.py \
 			--sample ${{samplename%.*}} \
 			--vcf workproband/${{samplename%.*}}.vcf.gz \
 			-o {output} \
