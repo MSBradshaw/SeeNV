@@ -1,2 +1,0 @@
-Example/calls_savvy1000.bed 
-Example/window_size_6000.bed
