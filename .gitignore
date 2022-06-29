@@ -27,3 +27,5 @@ SnakeMakeArea/bin
 DEL/
 .snakemake/
 work*
+*del*
+*pickle

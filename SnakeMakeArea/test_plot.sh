@@ -1,0 +1,16 @@
+python bin/cnv_plotter2.py \
+        --sample WES100_S13 \
+        --vcf workproband/WES100_S13.vcf.gz \
+        -o test_plot.png \
+        --scores workproband/MergedAdjZscore/adj_scores.bed.gz \
+        --exons WES_probe_performance.sorted.bed.gz \
+        --window 100000 \
+        --region 15:2036300-22014250 \
+        --height 7 \
+        --width 5 \
+        --label_exons \
+        --title "WES100_S13 15:2036300-22014250 Duplication" \
+        --depth workproband/ProbeCoverage/WES100_S13_probe.cover.mean.stdev.bed \
+        --max_num_calls 10 \
+        --gnomad_sv gnomad_v2.1_sv.sites.bed.gz \
+        --all_calls Example/all_calls_tabixed.txt
