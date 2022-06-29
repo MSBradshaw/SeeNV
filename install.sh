@@ -1,6 +1,6 @@
-conda create --name cnviz --file Install/cnviz.env -y
+conda create --name cnviz2 --file Install/cnviz.env -y
 
-conda activate cnviz
+conda activate cnviz2
 
 conda install -c bioconda pysam -y
 conda install -c bioconda bedtools -y
@@ -16,10 +16,10 @@ conda_loc=$(which python)
 conda_bin=$(dirname $conda_loc)
 # add cnviz's python script to the conda env bin
 cp bin/*.py $conda_bin
-cp bin/*.snake $conda_bin
-cp bin/cnviz $conda_bin
 
 # install gargs
 wget https://github.com/brentp/gargs/releases/download/v0.3.9/gargs_linux
 chmod 770 gargs_linux
 mv gargs_linux $conda_bin/gargs
+
+cp cnviz.py $conda_bin/cnviz

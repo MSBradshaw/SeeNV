@@ -29,3 +29,9 @@ DEL/
 work*
 *del*
 *pickle
+DelSnakemake/
+RefPanelDB/
+SmallNegPanelDB/
+bin/gargs
+bin/gatk-4.2.2.0.zip
+bin/gatk-4.2.2.0/
