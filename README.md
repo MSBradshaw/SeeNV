@@ -1,6 +1,6 @@
 <p align="center"><img src="https://github.com/MSBradshaw/CNViz/blob/main/Imgs/Logo.png?raw=true" width="80%"/></p>
 
-CNViz is still being developed. It is can be download and used but is by no means exaustively tested. 
+CNViz is still being developed. It can be download and used but is by no means exaustively tested. 
 
 Find a bug? Create an [issue](https://github.com/MSBradshaw/CNViz/issues)! 
 
