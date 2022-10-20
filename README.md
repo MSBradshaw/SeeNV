@@ -9,7 +9,7 @@ Have a feature idea? Create an [issue](https://github.com/MSBradshaw/SeeNV/issue
 SeeNV provides comprehensive yet easy to digest visualizations for each call in a sample and depicts relevant statistics comparing a sample to a cohort of other samples. 
 It is known that the accuracy and reliability of CNV calls increases when using multiple callers and parameter sets, for this reason SeeNV also provides a way to visualize multiple callers or bin sizes simultaneously — a feature not known to exist in other tools. 
 Combined with the tool [PlotCritic](https://github.com/jbelyeu/PlotCritic), we found that a clinician can accurately filter through roughly 200 calls in 20 minutes, or just 6 seconds per call on average. 
-SeeNV has been packaged as a Nextflow workflow that can be run as it’s own individual pipeline or included as part of another. 
+SeeNV is a command line tool that can be run as it’s own or added into your variant calling pipelines.
 
 
 <p align="center"><img src="https://github.com/MSBradshaw/CNViz/blob/main/Imgs/CNVizPoster.png?raw=true" width="100%"/></p>
