@@ -1,4 +1,4 @@
-<p align="center"><img src="https://github.com/MSBradshaw/CNViz/blob/main/seenv.png?raw=true" width="80%"/></p>
+<p align="center"><img src="https://github.com/MSBradshaw/SeeNV/blob/main/seenv.png?raw=true" width="80%"/></p>
 
 SeeNV is still being developed. It can be download and used but is by no means exaustively tested. 
 
@@ -23,19 +23,15 @@ SeeNV is currently only usable on Linux based systems.
 
 SeeNV requires you have [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) installed.
 
-Download this repo:
+Download this repo, move into it and run the installation script!
 
-`git install git@github.com:MSBradshaw/SeeNV.git`
+```
+git install git@github.com:MSBradshaw/SeeNV.git
+cd SeeNV
+source install.sh
+```
 
-Move into the repo:
-
-`cd SeeNV`
-
-Run the install script:
-
-`source install.sh`
-
-The install script will create a conda envrionment called `cnviz` with all the necessary python dependancies for SeeNV. It will also download a the following external non-python tools:
+The install script will create a conda envrionment called `seenv` with all the necessary python dependancies for SeeNV. It will also download a the following external non-python tools:
 
 [Snakemake](https://snakemake.readthedocs.io/en/stable/index.html)
 
@@ -49,32 +45,32 @@ The install script will create a conda envrionment called `cnviz` with all the n
 
 All these dependacies will be placed in the bin direcoty of the cnviz conda environment.
 
-As long as the conda environemnt is activated the `cnviz` command can now be used anywhere.
+As long as the conda environemnt is activated the `seenv` command can now be used anywhere.
 
 # Usage
 
 SeeNV requires it's conda environment in order to work, start the conda environment:
 
-`conda activate cnviz`
+`conda activate seenv`
 
 ## Build a Reference DB
 
 In order to generate plots, a reference panel database is required. You can either create your own or use the one included with this repository.
 
 ```
-cnviz \
+seenv \
 -b \
 -i panel.samples \
 -s ../WES_TargetCoverage_v2.bed \
 -c ../all_calls.txt \
--o DELDELDEL \
+-o ReferenceDB \
 -t 32
 ```
 
 ## Generate plots
 
 ```
-cnviz \
+seenv \
 -p \
 -i Example/cohort.samples \
 -s Example/probes.bed \
@@ -98,7 +94,7 @@ Parameters to accompany --plotsamples, -p:
     -s SITES           (required) genomic sites bed file
     -c ALL_CALLS       (required) calls file. Each line should be a path to a set of calls in bed format
     -o OUTPUT          (required) output directory, where to save the plots
-    -r REF_DB          (required) path to reference db created by the --buildref function of CNViz
+    -r REF_DB          (required) path to reference db created by the --buildref function of SeeNV
     -g GENES_FILE      (required) a bed format genes file
     -a GNOMAD          (required) the gnomad sv sites file with allele frequency information
     -t THREADS         (optional) number of threads to use, default 1 (you really want to use more than 1)
