@@ -1,15 +1,15 @@
-<p align="center"><img src="https://github.com/MSBradshaw/CNViz/blob/main/Imgs/Logo.png?raw=true" width="80%"/></p>
+<p align="center"><img src="https://github.com/MSBradshaw/CNViz/blob/main/seenv.png?raw=true" width="80%"/></p>
 
-CNViz is still being developed. It can be download and used but is by no means exaustively tested. 
+SeeNV is still being developed. It can be download and used but is by no means exaustively tested. 
 
-Find a bug? Create an [issue](https://github.com/MSBradshaw/CNViz/issues)! 
+Find a bug? Create an [issue](https://github.com/MSBradshaw/SeeNV/issues)! 
 
-Have a feature idea? Create an [issue](https://github.com/MSBradshaw/CNViz/issues)!
+Have a feature idea? Create an [issue](https://github.com/MSBradshaw/SeeNV/issues)!
 
-CNViz provides comprehensive yet easy to digest visualizations for each call in a sample and depicts relevant statistics comparing a sample to a cohort of other samples. 
-It is known that the accuracy and reliability of CNV calls increases when using multiple callers and parameter sets, for this reason CNViz also provides a way to visualize multiple callers or bin sizes simultaneously — a feature not known to exist in other tools. 
+SeeNV provides comprehensive yet easy to digest visualizations for each call in a sample and depicts relevant statistics comparing a sample to a cohort of other samples. 
+It is known that the accuracy and reliability of CNV calls increases when using multiple callers and parameter sets, for this reason SeeNV also provides a way to visualize multiple callers or bin sizes simultaneously — a feature not known to exist in other tools. 
 Combined with the tool [PlotCritic](https://github.com/jbelyeu/PlotCritic), we found that a clinician can accurately filter through roughly 200 calls in 20 minutes, or just 6 seconds per call on average. 
-CNViz has been packaged as a Nextflow workflow that can be run as it’s own individual pipeline or included as part of another. 
+SeeNV has been packaged as a Nextflow workflow that can be run as it’s own individual pipeline or included as part of another. 
 
 
 <p align="center"><img src="https://github.com/MSBradshaw/CNViz/blob/main/Imgs/CNVizPoster.png?raw=true" width="100%"/></p>
@@ -19,23 +19,23 @@ Poster Presentation from Genome Informatics 2021
 
 # Installation
 
-CNViz is currently only usable on Linux based systems. 
+SeeNV is currently only usable on Linux based systems. 
 
-CNViz requires you have [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) installed.
+SeeNV requires you have [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) installed.
 
 Download this repo:
 
-`git install git@github.com:MSBradshaw/CNViz.git`
+`git install git@github.com:MSBradshaw/SeeNV.git`
 
 Move into the repo:
 
-`cd CNViz`
+`cd SeeNV`
 
 Run the install script:
 
 `source install.sh`
 
-The install script will create a conda envrionment called `cnviz` with all the necessary python dependancies for CNViz. It will also download a the following external non-python tools:
+The install script will create a conda envrionment called `cnviz` with all the necessary python dependancies for SeeNV. It will also download a the following external non-python tools:
 
 [Snakemake](https://snakemake.readthedocs.io/en/stable/index.html)
 
@@ -53,7 +53,7 @@ As long as the conda environemnt is activated the `cnviz` command can now be use
 
 # Usage
 
-CNViz requires it's conda environment to work, start the conda environment:
+SeeNV requires it's conda environment in order to work, start the conda environment:
 
 `conda activate cnviz`
 
