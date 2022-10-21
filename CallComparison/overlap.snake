@@ -1,0 +1,213 @@
+import pandas as pd
+savvy_bed = 'savvy.bed'
+cnvkit_bed = 'cnvkit.bed'
+gatk_bed = 'gatk.bed'
+
+CALLERS = ['savvy','cnvkit','gatk']
+TYPES = ['DEL','DUP']
+SLOPS = [100,1000,2000,5000,10000,15000,20000,50000,100000]
+# get a list of all sample names
+SAMPLES = []
+for f in [savvy_bed,cnvkit_bed,gatk_bed]:
+	df = pd.read_csv(f,sep='\t',header=None)
+	samps = list(df.iloc[:,4])
+	print(samps)
+	SAMPLES += samps
+# get just the uniq sample names
+SAMPLES = list(set(SAMPLES))
+print(SAMPLES)
+# cnvkit_cnv_all_results.bed  gatk_cnv_calls_cleaned.bed  savvy_cnv_results_clean.bed
+rule all:
+	input:
+		expand('work/{caller}.DEL.bed',caller=CALLERS),
+		expand('work/{caller}.DUP.bed',caller=CALLERS),
+		expand('work/{sample}.{caller}.{cnv_type}.filtered.bed',sample=SAMPLES,caller=CALLERS,cnv_type=TYPES),
+                expand('work/Reciprocal/{sample}.savvy_x_gatk.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
+                expand('work/Reciprocal/{sample}.savvy_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
+                expand('work/Reciprocal/{sample}.gatk_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
+		expand('work/BEDPE/{sample}.{caller}.{cnv_type}.filtered.bedpe',sample=SAMPLES,caller=CALLERS,cnv_type=TYPES),
+	#	expand('work/BreakPoint/{sample}.savvy_x_gatk.{cnv_type}.breakpoint.filtered.bed',sample=SAMPLES,caller=CALLERS,cnv_type=TYPES),
+	#	expand('work/BreakPoint/{sample}.savvy_x_cnvkit.{cnv_type}.breakpoint.filtered.bed',sample=SAMPLES,caller=CALLERS,cnv_type=TYPES),
+	#	expand('work/BreakPoint/{sample}.gatk_x_cnvkit.{cnv_type}.breakpoint.filtered.bed',sample=SAMPLES,caller=CALLERS,cnv_type=TYPES),
+	#	expand('work/BreakPoint/{slop}/{sample}.savvy_x_gatk.{cnv_type}.breakpoint.filtered.bedpe',slop=SLOPS,sample=SAMPLES,cnv_type=TYPES),
+#		expand('work/BreakPoint/{slop}/{sample}.savvy_x_cnvkit.{cnv_type}.breakpoint.filtered.bedpe',slop=SLOPS,sample=SAMPLES,cnv_type=TYPES),
+#		expand('work/BreakPoint/{slop}/{sample}.gatk_x_cnvkit.{cnv_type}.breakpoint.filtered.bedpe',slop=SLOPS,sample=SAMPLES,cnv_type=TYPES),
+		expand('work/Reciprocal/Results/savvy_x_gatk.{cnv_type}.reciprocal.filtered.bed',cnv_type=TYPES),
+		expand('work/Reciprocal/Results/savvy_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',cnv_type=TYPES),
+		expand('work/Reciprocal/Results/gatk_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',cnv_type=TYPES),
+		expand('work/ReciprocalTriple/{sample}.savvy_x_gatk_cnvkit.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
+		expand('work/Results/triple_reciprocal_overlap.{cnv_type}.filtered.bed',cnv_type=TYPES),
+		expand('work/Results/multiinter.{cnv_type}.filtered.bed',cnv_type=TYPES),
+		expand('work/Results/multiinter.{cnv_type}.filtered.3_matches_count',cnv_type=TYPES),
+		expand('work/ThreeWay/{sample}.3way.{cnv_type}.filtered.bed',sample=SAMPLES,cnv_type=TYPES)
+
+rule split_del_dup:
+	input:
+		'{caller}.bed'
+	output:
+		deletion='work/{caller}.DEL.bed',
+		duplication='work/{caller}.DUP.bed'
+	shell:
+		"""
+		mkdir -p work
+		grep DUP {input} > {output.duplication}
+		grep DEL {input} > {output.deletion}
+		"""
+
+rule filter_calls_by_size:
+	input:
+		'work/{caller}.{cnv_type}.bed',
+	output:
+		'work/{caller}.{cnv_type}.filtered.bed',
+	shell:
+		"""
+		awk '{{if($3-$2 >= 1000) print}}' {input} > {output}
+		"""
+
+rule split_samps:
+	input:
+		'work/{caller}.{cnv_type}.filtered.bed'
+	output:
+		expand('work/{sample}.{caller}.{cnv_type}.filtered.bed',sample=SAMPLES,caller='{caller}',cnv_type='{cnv_type}')	
+	params:
+		samples = SAMPLES
+	shell:
+		"""
+		array=({params.samples})
+		for i in "${{array[@]}}"
+		do
+			{{ grep $i {input} > work/"$i".{wildcards.caller}.{wildcards.cnv_type}.filtered.bed || true; }}
+		done
+		"""
+
+rule recip_per_sample:
+	input:
+		savvy='work/{sample}.savvy.{cnv_type}.filtered.bed',
+		gatk='work/{sample}.gatk.{cnv_type}.filtered.bed',
+		cnvkit='work/{sample}.cnvkit.{cnv_type}.filtered.bed'
+	output:
+		'work/Reciprocal/{sample}.savvy_x_gatk.{cnv_type}.reciprocal.filtered.bed',
+		'work/Reciprocal/{sample}.savvy_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',
+		'work/Reciprocal/{sample}.gatk_x_cnvkit.{cnv_type}.reciprocal.filtered.bed'
+	shell:
+		"""
+		mkdir -p work/Reciprocal
+		bedtools intersect -a {input.savvy}  -b {input.gatk}  -r -f .5 > work/Reciprocal/{wildcards.sample}.savvy_x_gatk.{wildcards.cnv_type}.reciprocal.filtered.bed
+		bedtools intersect -a {input.savvy}  -b {input.cnvkit}  -r -f .5 > work/Reciprocal/{wildcards.sample}.savvy_x_cnvkit.{wildcards.cnv_type}.reciprocal.filtered.bed
+		bedtools intersect -a {input.gatk}  -b {input.cnvkit}  -r -f .5 > work/Reciprocal/{wildcards.sample}.gatk_x_cnvkit.{wildcards.cnv_type}.reciprocal.filtered.bed
+		"""
+
+rule make_bedpe:
+	input:
+		'work/{sample}.{caller}.{cnv_type}.filtered.bed',
+	output:
+		'work/BEDPE/{sample}.{caller}.{cnv_type}.filtered.bedpe'
+	shell:
+		"""
+		mkdir -p work/BEDPE/
+		cat {input} | awk '{{OFS="\t"; print $1,$2-1,$2,$1,$3,$3+1,$4,$5,$6,$7,".",".";}}' > {output}
+		"""
+
+rule breakpoint_overlap:
+	input:
+		savvy='work/BEDPE/{sample}.savvy.{cnv_type}.filtered.bedpe',
+		gatk='work/BEDPE/{sample}.gatk.{cnv_type}.filtered.bedpe',
+		cnvkit='work/BEDPE/{sample}.cnvkit.{cnv_type}.filtered.bedpe'
+	output:
+		expand('work/BreakPoint/{slop}/{sample}.savvy_x_gatk.{cnv_type}.breakpoint.filtered.bedpe',slop=SLOPS,sample='{sample}',cnv_type='{cnv_type}'),
+		expand('work/BreakPoint/{slop}/{sample}.savvy_x_cnvkit.{cnv_type}.breakpoint.filtered.bedpe',slop=SLOPS,sample='{sample}',cnv_type='{cnv_type}'),
+		expand('work/BreakPoint/{slop}/{sample}.gatk_x_cnvkit.{cnv_type}.breakpoint.filtered.bedpe',slop=SLOPS,sample='{sample}',cnv_type='{cnv_type}')
+	params:
+		slops=SLOPS
+	shell:
+		"""
+		array=({params.slops})
+		for i in "${{array[@]}}"
+		do
+			mkdir -p work/BreakPoint
+			mkdir -p work/BreakPoint/$i
+			bedtools pairtopair -slop $i -a {input.savvy} -b {input.gatk} > work/BreakPoint/$i/{wildcards.sample}.savvy_x_gatk.{wildcards.cnv_type}.breakpoint.filtered.bedpe
+			bedtools pairtopair -slop $i -a {input.savvy} -b {input.cnvkit} > work/BreakPoint/$i/{wildcards.sample}.savvy_x_cnvkit.{wildcards.cnv_type}.breakpoint.filtered.bedpe
+			bedtools pairtopair -slop $i -a {input.gatk} -b {input.cnvkit} > work/BreakPoint/$i/{wildcards.sample}.gatk_x_cnvkit.{wildcards.cnv_type}.breakpoint.filtered.bedpe
+		done
+		"""
+
+rule agg_reciprocal:
+	input:
+		sg=expand('work/Reciprocal/{sample}.savvy_x_gatk.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type='{cnv_type}'),
+		sc=expand('work/Reciprocal/{sample}.savvy_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type='{cnv_type}'),
+		gc=expand('work/Reciprocal/{sample}.gatk_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type='{cnv_type}')
+	output:
+		'work/Reciprocal/Results/savvy_x_gatk.{cnv_type}.reciprocal.filtered.bed',
+		'work/Reciprocal/Results/savvy_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',
+		'work/Reciprocal/Results/gatk_x_cnvkit.{cnv_type}.reciprocal.filtered.bed'
+	shell:
+		"""
+		mkdir -p work/Reciprocal/Results
+		cat {input.sg} > work/Reciprocal/Results/savvy_x_gatk.{wildcards.cnv_type}.reciprocal.filtered.bed
+		cat {input.sc} > work/Reciprocal/Results/savvy_x_cnvkit.{wildcards.cnv_type}.reciprocal.filtered.bed
+		cat {input.gc} > work/Reciprocal/Results/gatk_x_cnvkit.{wildcards.cnv_type}.reciprocal.filtered.bed
+		"""
+
+rule triple_recip:
+	input:
+		sg='work/Reciprocal/{sample}.savvy_x_gatk.{cnv_type}.reciprocal.filtered.bed',
+		c='work/cnvkit.{cnv_type}.filtered.bed'
+	output:
+		'work/ReciprocalTriple/{sample}.savvy_x_gatk_cnvkit.{cnv_type}.reciprocal.filtered.bed'
+	shell:
+		"""
+		mkdir -p work/ReciprocalTriple
+		bedtools intersect -a {input.sg} -b {input.c} -f .5 -r > {output}
+		"""
+
+rule agg_triple_recip:
+	input:
+		expand('work/ReciprocalTriple/{sample}.savvy_x_gatk_cnvkit.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type='{cnv_type}')
+	output:
+		'work/Results/triple_reciprocal_overlap.{cnv_type}.filtered.bed'
+	shell:
+		"""
+		cat {input} > {output}
+		"""
+
+rule multiinter:
+	input:
+		savvy='work/{sample}.savvy.{cnv_type}.filtered.bed',
+		gatk='work/{sample}.gatk.{cnv_type}.filtered.bed',
+		cnvkit='work/{sample}.cnvkit.{cnv_type}.filtered.bed'	
+	output:
+		'work/Multiinter/{sample}.multiinter.{cnv_type}.filtered.bed'
+	shell:
+		"""
+		bedtools multiinter -i {input.savvy} {input.gatk} {input.cnvkit} > {output}
+		"""
+
+rule agg_multiinter:
+	input:
+		expand('work/Multiinter/{sample}.multiinter.{cnv_type}.filtered.bed',sample=SAMPLES,cnv_type='{cnv_type}')
+	output:	
+		'work/Results/multiinter.{cnv_type}.filtered.bed',
+		'work/Results/multiinter.{cnv_type}.filtered.3_matches_count'
+	shell:
+		"""
+		cat {input} > work/Results/multiinter.{wildcards.cnv_type}.filtered.bed
+		grep -P '^\w+\t\w+\t\w+\t3'  work/Results/multiinter.{wildcards.cnv_type}.filtered.bed | wc -l > work/Results/multiinter.{wildcards.cnv_type}.filtered.3_matches_count
+		# documentation with column explaination: https://bedtools.readthedocs.io/en/latest/content/tools/multiinter.html
+		"""
+
+# this is a shit method for doing this
+rule three_way:
+	input:
+		savvy='work/{sample}.savvy.{cnv_type}.filtered.bed',
+		gatk='work/{sample}.gatk.{cnv_type}.filtered.bed',
+		cnvkit='work/{sample}.cnvkit.{cnv_type}.filtered.bed'
+	output:
+		'work/ThreeWay/{sample}.3way.{cnv_type}.filtered.bed'
+	threads: 2
+	shell:
+		"""
+		mkdir -p work/ThreeWay
+		touch {output}
+		python triple_reciprocal_ol.py {input.savvy} {input.gatk} {input.cnvkit} {output}
+		"""

@@ -1,4 +1,4 @@
-python cnviz.py -p -i pos.samples  \
+python seenv.py -p -i pos.samples  \
 -s ../WES_TargetCoverage_v2.bed \
 -c six_pos_calls.txt \
 -o ProbandTestOut \

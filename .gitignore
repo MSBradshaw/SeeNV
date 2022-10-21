@@ -35,3 +35,6 @@ SmallNegPanelDB/
 bin/gargs
 bin/gatk-4.2.2.0.zip
 bin/gatk-4.2.2.0/
+CallComparison/work/
+CallComparison/OG_Beds/
+CallComparison/job.sh

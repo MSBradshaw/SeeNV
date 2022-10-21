@@ -70,6 +70,7 @@ def main():
     
     for i in range(len(regions)):
         region = regions[i]
+        print(region)
         rate = rates[i]
         print('\t'.join([str(x) for x in [region.chrom,
                                           region.start,
