@@ -12,11 +12,6 @@ Combined with the tool [PlotCritic](https://github.com/jbelyeu/PlotCritic), we f
 SeeNV is a command line tool that can be run as it’s own or added into your variant calling pipelines.
 
 
-<p align="center"><img src="https://github.com/MSBradshaw/CNViz/blob/main/Imgs/CNVizPoster.png?raw=true" width="100%"/></p>
-
-
-Poster Presentation from Genome Informatics 2021
-
 # Installation
 
 SeeNV is currently only usable on Linux based systems. 
