@@ -70,11 +70,16 @@ def main():
     
     for i in range(len(regions)):
         region = regions[i]
+        print(region)
         rate = rates[i]
+        if region.data != None:
+            gene_name = region.data[0]
+        else:
+            gene_name = 'No_gene_name'
         print('\t'.join([str(x) for x in [region.chrom,
                                           region.start,
                                           region.end,
-                                          region.data[0],
+                                          gene_name,
                                           rate]]))
 
 

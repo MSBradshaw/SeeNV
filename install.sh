@@ -1,6 +1,6 @@
-conda create --name cnviz2 --file Install/cnviz.env -y
+conda create --name seenv --file Install/seenv.env -y
 
-conda activate cnviz2
+conda activate seenv
 
 conda install -c bioconda pysam -y
 conda install -c bioconda bedtools -y
@@ -14,7 +14,7 @@ conda install -c bioconda mosdepth -y
 conda_loc=$(which python)
 # strip the python on the end of that location
 conda_bin=$(dirname $conda_loc)
-# add cnviz's python script to the conda env bin
+# add SeeNV's python script to the conda env bin
 cp bin/*.py $conda_bin
 
 # install gargs
@@ -22,4 +22,4 @@ wget https://github.com/brentp/gargs/releases/download/v0.3.9/gargs_linux
 chmod 770 gargs_linux
 mv gargs_linux $conda_bin/gargs
 
-cp cnviz.py $conda_bin/cnviz
+cp seenv.py $conda_bin/seenv
