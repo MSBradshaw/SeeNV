@@ -38,3 +38,5 @@ bin/gatk-4.2.2.0/
 CallComparison/work/
 CallComparison/OG_Beds/
 CallComparison/job.sh
+bi300_plot_example.sh
+BI300_Test_Output_DB/
