@@ -70,7 +70,6 @@ def main():
     
     for i in range(len(regions)):
         region = regions[i]
-        print(region)
         rate = rates[i]
         if region.data != None:
             gene_name = region.data[0]

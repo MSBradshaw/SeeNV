@@ -38,6 +38,9 @@ def main():
         all_files.append(args.single_sample)
 
     for rate_file in all_files:
+        print('--')
+        print(rate_file)
+        print('--')
         with gzip.open(rate_file,'rt') as f:
             line_i = 0
             for l in f:
