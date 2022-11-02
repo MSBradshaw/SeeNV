@@ -21,7 +21,7 @@ SeeNV requires you have [conda](https://conda.io/projects/conda/en/latest/user-g
 Download this repo, move into it and run the installation script!
 
 ```
-git install git@github.com:MSBradshaw/SeeNV.git
+git clone git@github.com:MSBradshaw/SeeNV.git
 cd SeeNV
 source install.sh
 ```
