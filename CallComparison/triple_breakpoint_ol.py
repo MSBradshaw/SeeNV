@@ -13,6 +13,7 @@ def reciprocal_ol(loc1, loc2, r):
     return  (ol / (loc1[1] - loc1[0])) >= r and (ol / (loc2[1] - loc2[0])) >= r
 
 """
+Take in 3 bedpe files, check if there is overlap between all three breakpoints
 savvy='work/{sample}.savvy.{cnv_type}.filtered.bed',
 gatk='work/{sample}.gatk.{cnv_type}.filtered.bed',
 cnvkit='work/{sample}.cnvkit.{cnv_type}.filtered.bed'
@@ -21,7 +22,8 @@ Inputs
 1. bed file
 2. bed file
 3. bed file
-4. output file
+4. buffer_size
+5. output file
 """
 try:
     bed1 = pd.read_csv(sys.argv[1], sep='\t', header=None)
@@ -30,14 +32,16 @@ try:
 except pd.errors.EmptyDataError:
     print('One of the input files is empty')
     exit(0)
-outfile = sys.argv[4]
+
+buffer_size = int(sys.argv[4])
+outfile = sys.argv[5]
 
 beds = pd.concat([bed1,bed2,bed3])
-beds.columns = ['chrom','start','end','type','sample','caller']
+beds.columns = ['chrom1','start1','end1','chrom2','start2','end2','sample','score','strand1','strand2','call_type','caller']
 triple_ols = []
 # for each chrom
-for c in beds['chrom'].unique():
-    sub = beds[beds['chrom'] == c]
+for c in beds['chrom1'].unique():
+    sub = beds[beds['chrom1'] == c]
     # compute look up matrix, m
     # n by n matrix of -1, fill each cell with the reciprocal overlap of the two calls
     m = np.full((sub.shape[0],sub.shape[0]), -1)
@@ -46,9 +50,20 @@ for c in beds['chrom'].unique():
             # skip if it is self of has already been computed
             if i == j or m[i,j] != -1:
                 continue
-            # calc overlap between the two calls
-            is_reciprocal = reciprocal_ol((int(sub.iloc[i,:]['start']),int(sub.iloc[i,:]['end'])), (int(sub.iloc[j,:]['start']),int(sub.iloc[j,:]['end'])), r=.5)
-            if is_reciprocal:
+            # calc overlap between the two calls with buffer overlap, r=0.0 means any overlap will count
+            i_start1 = int(sub.iloc[i,:]['start1']) - buffer_size
+            i_end1 = int(sub.iloc[i,:]['end1']) + buffer_size
+            j_start1 = int(sub.iloc[j,:]['start1']) - buffer_size
+            j_end1 = int(sub.iloc[j,:]['end1']) + buffer_size
+
+            i_start2 = int(sub.iloc[i,:]['start2']) - buffer_size
+            i_end2 = int(sub.iloc[i,:]['end2']) + buffer_size
+            j_start2 = int(sub.iloc[j,:]['start2']) - buffer_size
+            j_end2 = int(sub.iloc[j,:]['end2']) + buffer_size
+
+            is_reciprocal1 = reciprocal_ol((i_start1,i_end1), (j_start1,j_end1), r=0.0)
+            is_reciprocal2 = reciprocal_ol((i_start2,i_end2), (j_start2,j_end2), r=0.0) 
+            if is_reciprocal1 and is_reciprocal2:
                 m[i,j] = 1
                 m[j,i] = 1
             else:

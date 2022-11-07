@@ -35,11 +35,12 @@ rule all:
 		expand('work/Reciprocal/Results/savvy_x_gatk.{cnv_type}.reciprocal.filtered.bed',cnv_type=TYPES),
 		expand('work/Reciprocal/Results/savvy_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',cnv_type=TYPES),
 		expand('work/Reciprocal/Results/gatk_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',cnv_type=TYPES),
-		expand('work/ReciprocalTriple/{sample}.savvy_x_gatk_cnvkit.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
-		expand('work/Results/triple_reciprocal_overlap.{cnv_type}.filtered.bed',cnv_type=TYPES),
-		expand('work/Results/multiinter.{cnv_type}.filtered.bed',cnv_type=TYPES),
-		expand('work/Results/multiinter.{cnv_type}.filtered.3_matches_count',cnv_type=TYPES),
-		expand('work/ThreeWay/{sample}.3way.{cnv_type}.filtered.bed',sample=SAMPLES,cnv_type=TYPES)
+		#expand('work/ReciprocalTriple/{sample}.savvy_x_gatk_cnvkit.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
+		#expand('work/Results/triple_reciprocal_overlap.{cnv_type}.filtered.bed',cnv_type=TYPES),
+		#expand('work/Results/multiinter.{cnv_type}.filtered.bed',cnv_type=TYPES),
+		#expand('work/Results/multiinter.{cnv_type}.filtered.3_matches_count',cnv_type=TYPES),
+		expand('work/ThreeWay/{sample}.3way.{cnv_type}.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
+		expand('work/ThreeWayBreakpoint/{sample}.3way.{cnv_type}.filtered.bedpe',sample=SAMPLES,cnv_type=TYPES)
 
 rule split_del_dup:
 	input:
@@ -212,3 +213,19 @@ rule three_way:
 		touch {output}
 		python triple_reciprocal_ol.py {input.savvy} {input.gatk} {input.cnvkit} {output}
 		"""
+
+rule three_way_breakpoint:
+	input:
+		savvy = 'work/BEDPE/{sample}.savvy.{cnv_type}.filtered.bedpe',
+		gatk = 'work/BEDPE/{sample}.gatk.{cnv_type}.filtered.bedpe',
+		cnvkit = 'work/BEDPE/{sample}.cnvkit.{cnv_type}.filtered.bedpe'
+	output:
+		'work/ThreeWayBreakpoint/{sample}.3way.{cnv_type}.filtered.bedpe'
+	threads: 2
+	shell:
+		"""
+		mkdir -p work/ThreeWayBreakpoint
+		touch {output}
+		python triple_breakpoint_ol.py {input.savvy} {input.gatk} {input.cnvkit} 5000 {output}
+		"""	
+
