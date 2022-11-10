@@ -86,6 +86,8 @@ def get_build_args():
 run_type, args = get_args()
 if run_type == 'plotsamples':
     command="""
+    conda_loc=$(which python)
+    conda_bin=$(dirname $conda_loc)
     inputsamples="{samples}"
     probes="{probes}"
     calls="{calls}"
@@ -129,6 +131,9 @@ if run_type == 'plotsamples':
 elif run_type == 'buildref':
     print('Building')
     command="""
+    conda_loc=$(which python)
+    conda_bin=$(dirname $conda_loc)
+
     inputsamples="{samples}"
     probes="{probes}"
     calls="{calls}"
