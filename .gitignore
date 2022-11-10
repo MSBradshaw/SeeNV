@@ -32,6 +32,7 @@ work*
 DelSnakemake/
 RefPanelDB/
 SmallNegPanelDB/
+NegPanel
 bin/gargs
 bin/gatk-4.2.2.0.zip
 bin/gatk-4.2.2.0/
