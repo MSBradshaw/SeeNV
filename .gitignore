@@ -41,3 +41,9 @@ CallComparison/OG_Beds/
 CallComparison/job.sh
 bi300_plot_example.sh
 BI300_Test_Output_DB/
+BI300_DB/
+*.sh
+*fijinode*
+make_bi_300_sample_lists.py
+*zip
+*png
