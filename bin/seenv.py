@@ -116,7 +116,7 @@ if run_type == 'plotsamples':
     echo $refpanel > workproband/reference_panel.txt
     
     # start the snakemake pipeline now they input files are in there proper locations
-    snakemake -c $threads -s run_proband.snake --configfile proband_config.json --printshellcmds --rerun-incomplete --restart-times 3
+    snakemake -c $threads -s $conda_bin/run_proband.snake --configfile $conda_bin/proband_config.json --printshellcmds --rerun-incomplete --restart-times 3
     """
     command = command.format(samples=args.input_samples,
                     probes=args.sites,
@@ -153,7 +153,7 @@ elif run_type == 'buildref':
     echo $outputdir > workpanel/outputdir.txt
 
     # start the snakemake pipeline now they input files are in there proper locations
-    snakemake -c $threads -s build_panel.snake --configfile panel_config.json --restart-times 3
+    snakemake -c $threads -s $conda_bin/build_panel.snake --configfile $conda_bin/panel_config.json --restart-times 3
     """
     command = command.format(samples=args.input_samples,probes=args.sites,calls=args.all_calls,out=args.output,threads=args.threads)
 else:
