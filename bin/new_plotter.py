@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import argparse
 import utils
 import matplotlib.pyplot as plt
@@ -558,7 +559,7 @@ def plot_gnomad(_ax: plt.Axes, _ax_legend: plt.Axes, _region: utils.Interval, _f
                 _edge_type = DEL_linestyle
             _span = _call.end - _call.start
             _rect = Rectangle((_call.start, _i), _span, .4, linewidth=1, edgecolor=_Y_info[_i][_j][_color_idx],
-                             facecolor=_Y_info[_i][_j][_color_idx], alpha=.3, linestyle=_edge_type)
+                             facecolor=_Y_info[_i][_j][_color_idx], alpha=_Y_info[_i][_j][_alpha_idx], linestyle=_edge_type)
             # Add the patch to the Axes
             _ax.add_patch(_rect)
 

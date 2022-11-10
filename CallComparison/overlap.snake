@@ -42,8 +42,9 @@ rule all:
 		expand('work/ThreeWay/{sample}.3way.{cnv_type}.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
 		expand('work/ThreeWayBreakpoint/{sample}.3way.{cnv_type}.filtered.bedpe',sample=SAMPLES,cnv_type=TYPES),
 		'work/ven_diagram_counts.txt',
-		'work/size_check_report.txt',
-		expand('work/out_of_sample_overlaps.{cnv_type}.bed',cnv_type=TYPES)
+		#'work/size_check_report.txt',
+		expand('work/out_of_sample_overlaps.{cnv_type}.bed',cnv_type=TYPES),
+		expand('work/GeneOverlap/{caller}.{cnv_type}.filtered.bed',caller=CALLERS,cnv_type=TYPES)
 
 rule split_del_dup:
 	input:
@@ -284,4 +285,14 @@ rule combine_size_check:
 		cat {input} > {output}
 		"""
 		
-
+rule intersect_genes_file:
+	input:
+		calls='work/{caller}.{cnv_type}.filtered.bed',
+		genes='/scratch/Shares/layer/ref/genes/Homo_sapiens.GRCh37.82.genes.bed'
+	output:
+		'work/GeneOverlap/{caller}.{cnv_type}.filtered.bed'
+	shell:
+		"""
+		mkdir -p work/GeneOverlap
+		bedtools intersect -a {input.calls} -b {input.genes} > {output}
+		"""
