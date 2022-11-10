@@ -474,7 +474,7 @@ rule plotter:
 		regionclean=$(cut -d" " -f5 <<< $string) 2>> {log}
 		svtype2=$(cut -d" " -f6 <<< $string) 2>> {log}
 
-		python bin/new_plotter.py \
+		new_plotter.py \
 			-i workproband/FindMaxTMP/savvy.bed.sorted.gz \
 			-i workproband/FindMaxTMP/gatk.bed.sorted.gz \
 			-i workproband/FindMaxTMP/cnvkit.bed.sorted.gz \
@@ -489,8 +489,6 @@ rule plotter:
 			--gnomad {input.gnomad_sv} \
 			--vardb Example/vardb.sorted.bed.gz \
 			--repeatmasker Example/genomicRepeats.sorted.bed.gz 
-			# commented out untill mutlicaller info is reimplemented
-			# --calls workproband/FindMaxTMP/multiple_savvy_calls.txt 2>> {log} 
 
 		"""
 

@@ -22,4 +22,4 @@ wget https://github.com/brentp/gargs/releases/download/v0.3.9/gargs_linux
 chmod 770 gargs_linux
 mv gargs_linux $conda_bin/gargs
 
-cp seenv.py $conda_bin/seenv
+cp bin/seenv.py $conda_bin/seenv
