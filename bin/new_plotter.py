@@ -12,7 +12,6 @@ from matplotlib.lines import Line2D
 from matplotlib.gridspec import GridSpec
 import typing
 import matplotlib
-import seaborn as sns
 import matplotlib.patches as patches
 from matplotlib.patches import Rectangle
 
@@ -155,7 +154,9 @@ def get_calls(_files: typing.List[str], _region: utils.Interval, _with_sample_id
     return list of Interval objects, one for each call that intersects the region of interest
     """
     _calls = []
+    print('Pre loop')
     for _f in _files:
+        print(_calls)
         # get all calls that overlap the region
         try:
             _tmp = utils.get_intervals_in_region(_region, _f)
@@ -170,8 +171,10 @@ def get_calls(_files: typing.List[str], _region: utils.Interval, _with_sample_id
             _keepers = [x for x in _tmp if sum(_with_sample_id in y for y in x.data) > 0]
         # get calls without a specific sample
         if _without_sample_id is not None:
-            _keepers = _keepers + [x for x in _tmp if sum(_without_sample_id not in y for y in x.data) > 0]
+            _keepers = _keepers + [x for x in _tmp if sum(_without_sample_id not in y for y in x.data) == 0]
         _calls = _calls + _keepers
+    print('Post loop')
+    print(_calls)
     return _calls
 
 
@@ -213,11 +216,11 @@ def mark_calls(_ax: plt.Axes, _ax_legend: plt.Axes, _calls: typing.List[utils.In
     _colors = []
     _alphas = []
     for _i, _c in enumerate(_calls):
+        print('Sample Call:', _c)
         _this_calls_alpha = None
         _this_calls_color = DEFAULT_BLUE
         _colors.append(DEFAULT_BLUE)
         _hatches.append(None)
-        print(_c.data[0])
         if 'Dup' in _c.data[0] or 'DUP' in _c.data[0] or 'dup' in _c.data[0]:
             print('Its a DUP')
             _this_calls_alpha = DUP_ALPHA
@@ -225,6 +228,7 @@ def mark_calls(_ax: plt.Axes, _ax_legend: plt.Axes, _calls: typing.List[utils.In
             _this_calls_alpha = DEL_ALPHA
             print('Its a DEL')
         else:
+            print('Warning! It is not a DUP or DEL')
             _this_calls_color = DEFAULT_GREY
             _colors.append(DEFAULT_GREY)
             _hatches.append(None)
@@ -284,7 +288,8 @@ def plot_sample_coverage_stats(_ax: plt.Axes, _region: utils.Interval, _scores_f
     param _non_sample_overlapping_calls: list of Interval objects that are overlapping non-sample calls
     """
 
-    _other_sample_with_calls = [x.data[7] for x in _non_sample_overlapping_calls]
+    # get the sample names of other samples with overlapping calls, this should be index 1 in the data
+    _other_sample_with_calls = [x.data[1] for x in _non_sample_overlapping_calls]
 
     _sites_tabix = None
     if _sites is not None:
@@ -310,6 +315,9 @@ def plot_sample_coverage_stats(_ax: plt.Axes, _region: utils.Interval, _scores_f
         if _sites_tabix is not None:
             res = _sites_tabix.fetch(_site.chrom, _site.start, _site.end)
             for _line in res:
+                # if there are less than 4 lines in the sites file, that means there is definately not any probe quality information
+                if len(ss(_line)) < 4:
+                    continue
                 _colors.append(ss(_line)[3])
                 if _colors[-1] not in _color_legend:
                     _color_legend[_colors[-1]] = ss(_line)[4]
@@ -442,10 +450,13 @@ def plot_other_samples_calls(_ax: plt.Axes, _ax_legend: plt.Axes, _region: utils
         _colors.append(DEFAULT_GREY)
         _hatches.append(None)
         if 'Dup' in _c.data[0] or 'DUP' in _c.data[0] or 'dup' in _c.data[0]:
+            print('Chort DUP')
             _this_calls_alpha = DUP_ALPHA
         elif 'Del' in _c.data[0] or 'DEL' in _c.data[0] or 'del' in _c.data[0]:
+            print('Chort DEL')
             _this_calls_alpha = DEL_ALPHA
         else:
+            print('Chort Niether DUP not DEL')
             _this_calls_color = DEFAULT_GREY
             _colors.append(DEFAULT_GREY)
             _hatches.append(None)
@@ -460,9 +471,10 @@ def plot_other_samples_calls(_ax: plt.Axes, _ax_legend: plt.Axes, _region: utils
             _edge_type = DUP_linestyle
             if _Y_info[_i][_j][_alpha_idx] == DEL_ALPHA:
                 _edge_type = DEL_linestyle
+
             _span = _call.end - _call.start
             _rect = Rectangle((_call.start, _i), _span, .4, linewidth=1, edgecolor=_Y_info[_i][_j][_color_idx],
-                             facecolor=_Y_info[_i][_j][_color_idx], alpha=.3, linestyle=_edge_type)
+                             facecolor=_Y_info[_i][_j][_color_idx], alpha=_Y_info[_i][_j][_alpha_idx], linestyle=_edge_type)
             # Add the patch to the Axes
             _ax.add_patch(_rect)
             # if the call extends past the x limits, add arrow
@@ -1008,9 +1020,15 @@ def probe_quality_heatmap(_ax: plt.Axes, _ax_legend: plt.Axes, _file: str, _regi
         _res = _probes_tabix.fetch(_region.chrom, _start_pos, _end_pos)
         _qualities = ['pseudo_count']
         for _line in _res:
+            if len(ss(_line)) < 4:
+                continue
             _qualities.append(ss(_line)[4])
-        _portion_good = len([x for x in _qualities if 'good' == x.lower()]) / len(_qualities)
-        _scores.append(_portion_good)
+        # if there is more than one there is probe information, else there is not and we need a filler value
+        if len(_qualities) > 1:
+            _portion_good = len([x for x in _qualities if 'good' == x.lower()]) / len(_qualities)
+            _scores.append(_portion_good)
+        else:
+            _scores.append(0)
     # plot the scores
     cmap = matplotlib.cm.get_cmap('Oranges')
     for i in range(len(_scores)):
@@ -1051,7 +1069,6 @@ def probe_quality_heatmap2(_ax: plt.Axes, _ax_legend: plt.Axes, _file: str, _reg
     _jump_size = (_x_range[1] - _x_range[0]) / 100
     _scores = []
     _scores2 = []
-    print(_region)
     cmap = matplotlib.cm.get_cmap('Blues_r')
     for i in range(100):
         _start_pos = _x_range[0] + _jump_size * i
@@ -1065,7 +1082,6 @@ def probe_quality_heatmap2(_ax: plt.Axes, _ax_legend: plt.Axes, _file: str, _reg
         _scores.append(_portion_good)
         _scores2.append(len(_qualities))
         _color = cmap(_scores[i])
-        # print(str(i), str(len(_res)), str(_scores[i]))
     # plot the scores
 
     for i in range(len(_scores)):
@@ -1156,7 +1172,10 @@ def main():
     """
     target_window = parse_region(args.region, args.window)
     target = parse_region(args.region, 0)
+    print(args.calls)
     in_sample_calls = get_calls(args.calls, target_window, _with_sample_id=args.sample)
+    for x in in_sample_calls:
+        print(x)
     # input_file_colors_options = ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c']
     input_file_hatch_options = ['////', '....', '||||', '----', '++++', 'xxxx', 'oooo', '****', 'OOOO', '\\\\\\\\']
     # index x.data[-1] is the file the call came from
@@ -1168,7 +1187,7 @@ def main():
     # find the calls that overlap with the given sample's call but are not that sample.
     # This is used in the main plot and the Cohort Calls plot
     non_sample_overlapping_calls = get_calls(args.calls, target_window, _without_sample_id=args.sample)
-
+    
     """
     Mark this sample's coverage stats
     """

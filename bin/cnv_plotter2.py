@@ -449,7 +449,7 @@ def main():
 
     non_samp_xs = []    
     non_samp_pos = []
-    vcf = VariantFile(args.vcf)
+    # vcf = VariantFile(args.vcf)
 
     for exon in scores:
         scores = [float(x) for x in exon.data[1:]]
@@ -459,13 +459,13 @@ def main():
         xs.append(scores[sample_i])
         non_samp_xs += scores
         non_samp_pos += [exon.end] * len(scores)
-        gt_stat =  utils.get_gt_stats(exon, target_sample=args.sample, vcf_handle=vcf)
-        if gt_stat:
-            obs_homs.append((exon.end,gt_stat[0][1]))
-            obs_hets.append((exon.end,gt_stat[1][1]))
+        #gt_stat =  utils.get_gt_stats(exon, target_sample=args.sample, vcf_handle=vcf)
+        #if gt_stat:
+        #    obs_homs.append((exon.end,gt_stat[0][1]))
+        #    obs_hets.append((exon.end,gt_stat[1][1]))
 
-            mean_homs.append((exon.end,gt_stat[0][2]))
-            mean_hets.append((exon.end,gt_stat[1][2]))
+         #   mean_homs.append((exon.end,gt_stat[0][2]))
+         #   mean_hets.append((exon.end,gt_stat[1][2]))
 
     # find out the number of extra bed files to be included
     num_additional_beds = 0
@@ -633,7 +633,7 @@ def main():
                 try:
                     tmp_calls = get_all_savvy_call_objects_in_target(f,x,ignore=args.sample)
                 except ValueError:
-                    print("Region",str(x),"cannot befound in",f)
+                    print("Region",str(x),"cannot be found in",f)
                     tmp_calls = []
                 for c in tmp_calls:
                     curr_sample = c.data[1].split('.')[0] 
@@ -645,6 +645,9 @@ def main():
             x_vals = [ x_vals[j] for j in indexes]
             y_vals = [ density_of_calls_at_each_probe[i] for i in indexes]
             #axs[num_calls_idx].scatter(x_vals, y_vals,s=.1,color=colors[i],marker='*')
+            print('i for colors',i)
+            print('len of colors', len(colors))
+            print(get_file_name(f))
             legend_elements.append(Line2D([0], [0],
                               marker='o',
                               color=colors[i],

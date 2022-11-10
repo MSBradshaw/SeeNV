@@ -265,6 +265,7 @@ rule get_probe_cover_mean_std:
 		bedgz="workproband/ProbeCoverage/{sample}_probe.cover.mean.stdev.bed.gz",
 		tbi="workproband/ProbeCoverage/{sample}_probe.cover.mean.stdev.bed.gz.tbi",
 		bed="workproband/ProbeCoverage/{sample}_probe.cover.mean.stdev.bed"
+	threads: 2
 	shell:
 		"""
 		get_regions_zscores.py -r workproband/ProbeCoverageRefPanel/ -s {input.proband_rpm} | bgzip -c > {output.bedgz}
@@ -287,6 +288,7 @@ rule get_probe_cover_mean_std_for_reference_panel:
 		bedgz="workproband/ProbeCoverageRefPanel/{ref_sample}_probe.cover.mean.stdev.bed.gz",
 		tbi="workproband/ProbeCoverageRefPanel/{ref_sample}_probe.cover.mean.stdev.bed.gz.tbi",
 		bed="workproband/ProbeCoverageRefPanel/{ref_sample}_probe.cover.mean.stdev.bed"
+	threads: 2
 	shell:  
 		"""
 		mkdir -p workproband/ProbeCoverageRefPanel
@@ -370,6 +372,8 @@ rule prep_all_calls:
 	shell:
 		"""
 		mkdir -p workproband/FindMaxTMP
+		rm workproband/FindMaxTMP/*
+		cat "" > workproband/FindMaxTMP/multiple_savvy_calls.txt
 		while read p; do
 			name=$(basename $p)
 			array=( {params.samples} )
@@ -436,8 +440,8 @@ rule aggregate_maxes:
 
 rule plotter:
 	input:
-		exons="workproband/Exons/labeled_exons.bed.gz",
-		exons_tbi="workproband/Exons/labeled_exons.bed.gz.tbi",
+		probes="workproband/Probes/probes.sorted.bed.gz",
+		probes_tbi="workproband/Probes/probes.sorted.bed.gz.tbi",
 		all_calls="workproband/FindMaxTMP/.ready",
 		param_file=Checkpoint_MakePattern_prime('workproband/SplitParams/{num}.txt'),
 		marker_file="workproband/SplitParams/.split_param_file.ready",
@@ -470,23 +474,24 @@ rule plotter:
 		regionclean=$(cut -d" " -f5 <<< $string) 2>> {log}
 		svtype2=$(cut -d" " -f6 <<< $string) 2>> {log}
 
-		#cnv_plotter.py \
-		python bin/cnv_plotter2.py \
-			--sample ${{samplename%.*}} \
-			--vcf workproband/${{samplename%.*}}.vcf.gz \
-			-o {output} \
-			--scores {input.adj_scores} \
-			--exons {input.exons} \
-			--window 100000 \
+		python bin/new_plotter.py \
+			-i workproband/FindMaxTMP/savvy.bed.sorted.gz \
+			-i workproband/FindMaxTMP/gatk.bed.sorted.gz \
+			-i workproband/FindMaxTMP/cnvkit.bed.sorted.gz \
+			-s ${{samplename%.*}} \
+			--output {output} \
+			--coverage_scores {input.adj_scores} \
+			--sites {input.probes} \
+			--window 50000 \
 			--region ${{region}} \
-			--height 7 \
-			--width 5 \
-			--label_exons \
 			--title "${{sample}} ${{region}} ${{svtype}}" \
 			--depth workproband/ProbeCoverage/${{sample}}_probe.cover.mean.stdev.bed \
-			--max_num_calls {input.all_maxes} \
-			--gnomad_sv {input.gnomad_sv} \
-			--all_calls workproband/FindMaxTMP/multiple_savvy_calls.txt 2>> {log} 
+			--gnomad {input.gnomad_sv} \
+			--vardb Example/vardb.sorted.bed.gz \
+			--repeatmasker Example/genomicRepeats.sorted.bed.gz 
+			# commented out untill mutlicaller info is reimplemented
+			# --calls workproband/FindMaxTMP/multiple_savvy_calls.txt 2>> {log} 
+
 		"""
 
 

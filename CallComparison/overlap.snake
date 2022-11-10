@@ -40,7 +40,10 @@ rule all:
 		#expand('work/Results/multiinter.{cnv_type}.filtered.bed',cnv_type=TYPES),
 		#expand('work/Results/multiinter.{cnv_type}.filtered.3_matches_count',cnv_type=TYPES),
 		expand('work/ThreeWay/{sample}.3way.{cnv_type}.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
-		expand('work/ThreeWayBreakpoint/{sample}.3way.{cnv_type}.filtered.bedpe',sample=SAMPLES,cnv_type=TYPES)
+		expand('work/ThreeWayBreakpoint/{sample}.3way.{cnv_type}.filtered.bedpe',sample=SAMPLES,cnv_type=TYPES),
+		'work/ven_diagram_counts.txt',
+		'work/size_check_report.txt',
+		expand('work/out_of_sample_overlaps.{cnv_type}.bed',cnv_type=TYPES)
 
 rule split_del_dup:
 	input:
@@ -205,27 +208,80 @@ rule three_way:
 		gatk='work/{sample}.gatk.{cnv_type}.filtered.bed',
 		cnvkit='work/{sample}.cnvkit.{cnv_type}.filtered.bed'
 	output:
-		'work/ThreeWay/{sample}.3way.{cnv_type}.filtered.bed'
+		recip_out='work/ThreeWay/{sample}.3way.{cnv_type}.filtered.bed',
+		buffer_out='work/BufferThreeWay/{sample}.3way.{cnv_type}.filtered.bed',
+		buffer_doubles_out='work/BufferDoublesWay/{sample}.2way.{cnv_type}.filtered.bed',
+		both_3way='work/BothOverlaps/{sample}.3way.{cnv_type}.filtered.bed',
+		both_2way='work/BothOverlaps/{sample}.2way.{cnv_type}.filtered.bed'
 	threads: 2
 	shell:
 		"""
 		mkdir -p work/ThreeWay
-		touch {output}
-		python triple_reciprocal_ol.py {input.savvy} {input.gatk} {input.cnvkit} {output}
+		mkdir -p work/BufferThreeWay
+		mkdir -p work/BufferDoublesWay
+		mkdir -p work/BothOverlaps
+		touch {output.recip_out}
+		touch {output.buffer_out}
+		touch {output.buffer_doubles_out}
+		touch {output.both_3way}
+		touch {output.both_2way}
+		python triple_reciprocal_ol.py {input.savvy} {input.gatk} {input.cnvkit} {output.recip_out}
+		python buffer_overlaps.py {input.savvy} {input.gatk} {input.cnvkit} 5000 {output.buffer_out} {output.buffer_doubles_out}
+		python recip_and_buffer.py {input.savvy} {input.gatk} {input.cnvkit} 5000 {output.both_3way} {output.both_2way}
 		"""
 
-rule three_way_breakpoint:
+rule overlap_out_of_sample:
 	input:
-		savvy = 'work/BEDPE/{sample}.savvy.{cnv_type}.filtered.bedpe',
-		gatk = 'work/BEDPE/{sample}.gatk.{cnv_type}.filtered.bedpe',
-		cnvkit = 'work/BEDPE/{sample}.cnvkit.{cnv_type}.filtered.bedpe'
+		savvy=expand('work/{sample}.savvy.{cnv_type}.filtered.bed',sample=SAMPLES,cnv_type='{cnv_type}'),
+		gatk=expand('work/{sample}.gatk.{cnv_type}.filtered.bed',sample=SAMPLES,cnv_type='{cnv_type}'),
+		cnvkit=expand('work/{sample}.cnvkit.{cnv_type}.filtered.bed',sample=SAMPLES,cnv_type='{cnv_type}')
 	output:
-		'work/ThreeWayBreakpoint/{sample}.3way.{cnv_type}.filtered.bedpe'
-	threads: 2
+		'work/out_of_sample_overlaps.{cnv_type}.bed'
 	shell:
 		"""
-		mkdir -p work/ThreeWayBreakpoint
-		touch {output}
-		python triple_breakpoint_ol.py {input.savvy} {input.gatk} {input.cnvkit} 5000 {output}
-		"""	
+		cat {input.gatk} > tmp.all.{wildcards.cnv_type}.filtered.bed
+		cat {input.savvy} >> tmp.all.{wildcards.cnv_type}.filtered.bed
+		cat {input.cnvkit} >> tmp.all.{wildcards.cnv_type}.filtered.bed
+		python out_of_sample_overlap.py tmp.all.filtered.bed 5000 {output}
+		"""
+
+rule ven_diagram_counts:
+	input:
+		expand('work/ThreeWay/{sample}.3way.{cnv_type}.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
+                expand('work/ThreeWayBreakpoint/{sample}.3way.{cnv_type}.filtered.bedpe',sample=SAMPLES,cnv_type=TYPES),
+		expand('work/{sample}.{caller}.{cnv_type}.filtered.bed',sample=SAMPLES,caller=CALLERS,cnv_type=TYPES),
+		expand('work/BreakPoint/{slop}/{sample}.savvy_x_gatk.{cnv_type}.breakpoint.filtered.bedpe',slop='5000',sample=SAMPLES,cnv_type=TYPES),
+		expand('work/BreakPoint/{slop}/{sample}.savvy_x_cnvkit.{cnv_type}.breakpoint.filtered.bedpe',slop='5000',sample=SAMPLES,cnv_type=TYPES),
+		expand('work/BreakPoint/{slop}/{sample}.gatk_x_cnvkit.{cnv_type}.breakpoint.filtered.bedpe',slop='5000',sample=SAMPLES,cnv_type=TYPES),
+		expand('work/Reciprocal/Results/savvy_x_gatk.{cnv_type}.reciprocal.filtered.bed',cnv_type=TYPES),
+		expand('work/Reciprocal/Results/savvy_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',cnv_type=TYPES),
+		expand('work/Reciprocal/Results/gatk_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',cnv_type=TYPES)
+	output:
+		'work/ven_diagram_counts.txt'
+	shell:
+		"""
+		python count_ven_diagram_stats.py > {output}
+		"""
+		
+rule check_sizes:
+	input:
+		'work/{sample}.{caller}.{cnv_type}.filtered.bed'
+	output:
+		'work/SizeCheck/{sample}.{caller}.{cnv_type}.sizecheck.txt'
+	shell:
+		"""
+		mkdir -p work/SizeCheck
+		python check_bed_sizes.py {input} > {output}
+		"""
+
+rule combine_size_check:
+	input:
+		expand('work/SizeCheck/{sample}.{caller}.{cnv_type}.sizecheck.txt',sample=SAMPLES,caller=CALLERS,cnv_type=TYPES)
+	output:
+		'work/size_check_report.txt'		
+	shell:
+		"""
+		cat {input} > {output}
+		"""
+		
 

@@ -34,6 +34,11 @@ outfile = sys.argv[4]
 
 beds = pd.concat([bed1,bed2,bed3])
 beds.columns = ['chrom','start','end','type','sample','caller']
+
+beds['chrom'] = beds['chrom'].astype(str)
+beds['start'] = beds['start'].astype(int)
+beds['end'] = beds['end'].astype(int)
+
 triple_ols = []
 # for each chrom
 for c in beds['chrom'].unique():
