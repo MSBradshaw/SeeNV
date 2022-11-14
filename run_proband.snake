@@ -3,7 +3,7 @@ import os
 
 # Load input files and options
 samples_df = pd.read_csv('workproband/proband.samples',sep='\t',header=None)
-samples_df.columns = ['p_id','s_id','sex','bam','bai','vcf','tbi']
+samples_df.columns = ['p_id','s_id','sex','bam','bai']
 
 SAMPLES = samples_df['s_id']
 BAM = samples_df["bam"]
@@ -23,7 +23,7 @@ for f in os.listdir(config['reference_panel'] + 'RPM/'):
 	REF_RPMs.append(config['reference_panel'] + 'RPM/' + f)
 
 ref_samples_df = pd.read_csv(config['reference_panel'] + 'panel.samples',sep='\t',header=None)
-ref_samples_df.columns = ['p_id','s_id','sex','bam','bai','vcf','tbi']
+ref_samples_df.columns = ['p_id','s_id','sex','bam','bai']
 REF_SAMPLES = list(ref_samples_df['s_id'])
 	
 num_calls = 0
@@ -457,12 +457,14 @@ rule plotter:
 	log:
 		"workproband/logs/plotting_{num}.log"
 	params:
-		num_calls=len(NUM_CALLS)
+		num_calls=len(NUM_CALLS),
+		# this will produce a string of inputs for the plotter "-i /path/file1.bed.gz -i /path/file2.bed.gz"
+		calls=[ ' -i ' + l.strip() for l in open('workproband/FindMaxTMP/multiple_savvy_calls.txt')]
 	shell:
 		"""
 		echo {params.num_calls} >> {log}
 		echo {wildcards.num} >> {log}
-		mkdir -p workproband/FindMax/ 2>> {log}
+		mkdir -p workproband/Plots/ 2>> {log}
 
 		string=$(head -1 {input.param_file}) 2>> {log}
 
@@ -475,9 +477,7 @@ rule plotter:
 		svtype2=$(cut -d" " -f6 <<< $string) 2>> {log}
 
 		new_plotter.py \
-			-i workproband/FindMaxTMP/savvy.bed.sorted.gz \
-			-i workproband/FindMaxTMP/gatk.bed.sorted.gz \
-			-i workproband/FindMaxTMP/cnvkit.bed.sorted.gz \
+			{params.calls} \
 			-s ${{samplename%.*}} \
 			--output {output} \
 			--coverage_scores {input.adj_scores} \

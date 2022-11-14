@@ -101,8 +101,8 @@ if run_type == 'plotsamples':
     cp $inputsamples workproband/proband.samples
     cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{3}} workproband/{{0}}.bam"
     cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{4}} workproband/{{0}}.bai"
-    cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{5}} workproband/{{0}}.vcf.gz"
-    cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{6}} workproband/{{0}}.vcf.gz.tbi"
+    # cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{5}} workproband/{{0}}.vcf.gz"
+    # cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{6}} workproband/{{0}}.vcf.gz.tbi"
 
     mkdir -p workproband/Probes
     ln -s "$(cd "$(dirname "$probes")"; pwd)/$(basename "$probes")" workproband/Probes/probes.original.bed
@@ -146,8 +146,8 @@ elif run_type == 'buildref':
     cp $inputsamples workpanel/panel.samples
     cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{3}} workpanel/{{0}}.bam"
     cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{4}} workpanel/{{0}}.bai"
-    cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{5}} workpanel/{{0}}.vcf.gz"
-    cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{6}} workpanel/{{0}}.vcf.gz.tbi"
+    # cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{5}} workpanel/{{0}}.vcf.gz"
+    # cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{6}} workpanel/{{0}}.vcf.gz.tbi"
  
     mkdir -p workpanel/Probes
     ln -f -s "$(cd "$(dirname "$probes")"; pwd)/$(basename "$probes")" workpanel/Probes/probes.original.bed

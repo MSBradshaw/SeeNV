@@ -82,6 +82,7 @@ def main():
         colors = call_colors
         all_max_ys = []
         for i,line in enumerate(open(args.all_calls,'r')):
+            print(line)
             f = line.strip()
             try:
                 density_of_calls_at_each_probe = [ len(get_all_savvy_calls_in_target(f,x,ignore=args.sample)) for x in probes]

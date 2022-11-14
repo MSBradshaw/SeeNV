@@ -4,7 +4,7 @@ SAMPLES_FILE = "workpanel/panel.samples"
 
 # Load input files and options
 samples_df = pd.read_csv(SAMPLES_FILE,sep='\t',header=None)
-samples_df.columns = ['p_id','s_id','sex','bam','bai','vcf','tbi']
+samples_df.columns = ['p_id','s_id','sex','bam','bai']
 
 PROBESFILE = 'workpanel/Probes/probes.original.bed'
 
