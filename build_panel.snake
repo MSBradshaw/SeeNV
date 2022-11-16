@@ -4,7 +4,7 @@ SAMPLES_FILE = "workpanel/panel.samples"
 
 # Load input files and options
 samples_df = pd.read_csv(SAMPLES_FILE,sep='\t',header=None)
-samples_df.columns = ['p_id','s_id','sex','bam','bai']
+samples_df.columns = ['p_id','s_id','sex','bam','bai','vcf','tbi']
 
 PROBESFILE = 'workpanel/Probes/probes.original.bed'
 
@@ -47,7 +47,7 @@ rule mosdepth:
 	shell:
 		"""
 		mkdir -p workpanel/Mosdepth
-		mosdepth workpanel/Mosdepth/{wildcards.sample} {input}
+		./bin/mosdepth workpanel/Mosdepth/{wildcards.sample} {input}
 		tabix -p bed workpanel/Mosdepth/{wildcards.sample}.per-base.bed.gz
 		"""
 
@@ -97,7 +97,7 @@ rule get_probe_reads_per_million:
 		"workpanel/RPM/{sample}.probe.rpm_rate.bed.gz.tbi"
 	shell:
 		"""
-		get_rpm_rates.py \
+		python bin/get_rpm_rates.py \
 		-m {input.per_base_bed_gz} \
 		--regions_file {input.probes_gz} \
 		--num_reads {input.total_reads} \

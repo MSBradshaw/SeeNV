@@ -462,6 +462,15 @@ rule plotter:
 		num_calls=len(NUM_CALLS)
 	shell:
 		"""
+		inputs=""
+		empty=""
+		while read p; do
+			if [ "$inputs" == "$empty" ]; then
+				inputs="$p"
+			else
+				inputs="$inputs,$p"
+			fi
+		done < workproband/FindMaxTMP/multiple_savvy_calls.txt
 		echo {params.num_calls} >> {log}
 		echo {wildcards.num} >> {log}
 		mkdir -p workproband/Plots/ 2>> {log}
@@ -477,7 +486,7 @@ rule plotter:
 		svtype2=$(cut -d" " -f6 <<< $string) 2>> {log}
 
 		new_plotter.py \
-			{params.calls} \
+			-i $inputs \
 			-s ${{samplename%.*}} \
 			--output {output} \
 			--coverage_scores {input.adj_scores} \
