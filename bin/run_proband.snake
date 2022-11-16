@@ -3,7 +3,7 @@ import os
 
 # Load input files and options
 samples_df = pd.read_csv('workproband/proband.samples',sep='\t',header=None)
-samples_df.columns = ['p_id','s_id','sex','bam','bai','vcf','tbi']
+samples_df.columns = ['p_id','s_id','sex','bam','bai']
 
 SAMPLES = samples_df['s_id']
 BAM = samples_df["bam"]
@@ -23,7 +23,7 @@ for f in os.listdir(config['reference_panel'] + 'RPM/'):
 	REF_RPMs.append(config['reference_panel'] + 'RPM/' + f)
 
 ref_samples_df = pd.read_csv(config['reference_panel'] + 'panel.samples',sep='\t',header=None)
-ref_samples_df.columns = ['p_id','s_id','sex','bam','bai','vcf','tbi']
+ref_samples_df.columns = ['p_id','s_id','sex','bam','bai']
 REF_SAMPLES = list(ref_samples_df['s_id'])
 	
 num_calls = 0
@@ -265,6 +265,7 @@ rule get_probe_cover_mean_std:
 		bedgz="workproband/ProbeCoverage/{sample}_probe.cover.mean.stdev.bed.gz",
 		tbi="workproband/ProbeCoverage/{sample}_probe.cover.mean.stdev.bed.gz.tbi",
 		bed="workproband/ProbeCoverage/{sample}_probe.cover.mean.stdev.bed"
+	threads: 2
 	shell:
 		"""
 		get_regions_zscores.py -r workproband/ProbeCoverageRefPanel/ -s {input.proband_rpm} | bgzip -c > {output.bedgz}
@@ -287,6 +288,7 @@ rule get_probe_cover_mean_std_for_reference_panel:
 		bedgz="workproband/ProbeCoverageRefPanel/{ref_sample}_probe.cover.mean.stdev.bed.gz",
 		tbi="workproband/ProbeCoverageRefPanel/{ref_sample}_probe.cover.mean.stdev.bed.gz.tbi",
 		bed="workproband/ProbeCoverageRefPanel/{ref_sample}_probe.cover.mean.stdev.bed"
+	threads: 2
 	shell:  
 		"""
 		mkdir -p workproband/ProbeCoverageRefPanel
@@ -370,6 +372,8 @@ rule prep_all_calls:
 	shell:
 		"""
 		mkdir -p workproband/FindMaxTMP
+		rm -f workproband/FindMaxTMP/*
+		echo "" > workproband/FindMaxTMP/multiple_savvy_calls.txt
 		while read p; do
 			name=$(basename $p)
 			array=( {params.samples} )
@@ -436,8 +440,8 @@ rule aggregate_maxes:
 
 rule plotter:
 	input:
-		exons="workproband/Exons/labeled_exons.bed.gz",
-		exons_tbi="workproband/Exons/labeled_exons.bed.gz.tbi",
+		probes="workproband/Probes/probes.sorted.bed.gz",
+		probes_tbi="workproband/Probes/probes.sorted.bed.gz.tbi",
 		all_calls="workproband/FindMaxTMP/.ready",
 		param_file=Checkpoint_MakePattern_prime('workproband/SplitParams/{num}.txt'),
 		marker_file="workproband/SplitParams/.split_param_file.ready",
@@ -446,7 +450,9 @@ rule plotter:
 		all_maxes="workproband/FindMax/all_maxes.txt",
 		adj_scores="workproband/MergedAdjZscore/adj_scores.bed.gz",
 		adj_scores_tbi="workproband/MergedAdjZscore/adj_scores.bed.gz.tbi",
-		gnomad_sv=config['gnomad_sv_bed_gz']
+		gnomad_sv=config['gnomad_sv_bed_gz'],
+		vardb=config['vardb_bed_gz'],
+		repeat_masker=config['repeat_masker_gz']
 
 	output:
 		"workproband/Plots/{num}.png"
@@ -456,9 +462,18 @@ rule plotter:
 		num_calls=len(NUM_CALLS)
 	shell:
 		"""
+		inputs=""
+		empty=""
+		while read p; do
+			if [ "$inputs" == "$empty" ]; then
+				inputs="$p"
+			else
+				inputs="$inputs,$p"
+			fi
+		done < workproband/FindMaxTMP/multiple_savvy_calls.txt
 		echo {params.num_calls} >> {log}
 		echo {wildcards.num} >> {log}
-		mkdir -p workproband/FindMax/ 2>> {log}
+		mkdir -p workproband/Plots/ 2>> {log}
 
 		string=$(head -1 {input.param_file}) 2>> {log}
 
@@ -470,22 +485,20 @@ rule plotter:
 		regionclean=$(cut -d" " -f5 <<< $string) 2>> {log}
 		svtype2=$(cut -d" " -f6 <<< $string) 2>> {log}
 
-		cnv_plotter.py \
-			--sample ${{samplename%.*}} \
-			--vcf workproband/${{samplename%.*}}.vcf.gz \
-			-o {output} \
-			--scores {input.adj_scores} \
-			--exons {input.exons} \
-			--window 100000 \
+		new_plotter.py \
+			-i $inputs \
+			-s ${{samplename%.*}} \
+			--output {output} \
+			--coverage_scores {input.adj_scores} \
+			--sites {input.probes} \
+			--window 50000 \
 			--region ${{region}} \
-			--height 7 \
-			--width 5 \
-			--label_exons \
 			--title "${{sample}} ${{region}} ${{svtype}}" \
 			--depth workproband/ProbeCoverage/${{sample}}_probe.cover.mean.stdev.bed \
-			--max_num_calls {input.all_maxes} \
-			--gnomad_sv {input.gnomad_sv} \
-			--all_calls workproband/FindMaxTMP/multiple_savvy_calls.txt 2>> {log} 
+			--gnomad {input.gnomad_sv} \
+			--vardb {input.vardb} \
+			--repeatmasker {input.repeat_masker}
+
 		"""
 
 

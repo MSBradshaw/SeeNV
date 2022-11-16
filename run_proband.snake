@@ -450,16 +450,16 @@ rule plotter:
 		all_maxes="workproband/FindMax/all_maxes.txt",
 		adj_scores="workproband/MergedAdjZscore/adj_scores.bed.gz",
 		adj_scores_tbi="workproband/MergedAdjZscore/adj_scores.bed.gz.tbi",
-		gnomad_sv=config['gnomad_sv_bed_gz']
+		gnomad_sv=config['gnomad_sv_bed_gz'],
+		vardb=config['vardb_bed_gz'],
+		repeat_masker=config['repeat_masker_gz']
 
 	output:
 		"workproband/Plots/{num}.png"
 	log:
 		"workproband/logs/plotting_{num}.log"
 	params:
-		num_calls=len(NUM_CALLS),
-		# this will produce a string of inputs for the plotter "-i /path/file1.bed.gz -i /path/file2.bed.gz"
-		calls=[ ' -i ' + l.strip() for l in open('workproband/FindMaxTMP/multiple_savvy_calls.txt')]
+		num_calls=len(NUM_CALLS)
 	shell:
 		"""
 		echo {params.num_calls} >> {log}
@@ -487,8 +487,8 @@ rule plotter:
 			--title "${{sample}} ${{region}} ${{svtype}}" \
 			--depth workproband/ProbeCoverage/${{sample}}_probe.cover.mean.stdev.bed \
 			--gnomad {input.gnomad_sv} \
-			--vardb Example/vardb.sorted.bed.gz \
-			--repeatmasker Example/genomicRepeats.sorted.bed.gz 
+			--vardb {input.vardb} \
+			--repeatmasker {input.repeat_masker}
 
 		"""
 

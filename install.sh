@@ -1,6 +1,6 @@
-conda create --name seenv --file Install/seenv.env -y
+conda create --name seenv2 --file Install/seenv.env -y
 
-conda activate seenv
+conda activate seenv2
 
 conda install -c bioconda pysam -y
 conda install -c bioconda bedtools -y

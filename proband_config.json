@@ -2,5 +2,7 @@
   'probes':'workproband/Probes/probes.original.bed',
   'all_calls':'workproband/Calls/all.calls.original.txt',
   'gnomad_sv_bed_gz':'workproband/gnomad_sv.bed.gz',
-  'gnomad_sv_bed_gz_tbi':'workproband/gnomad_sv.bed.gz.tbi'
+  'gnomad_sv_bed_gz_tbi':'workproband/gnomad_sv.bed.gz.tbi',
+  'vardb_bed_gz':'workproband/vardb.bed.gz',
+  'repeat_masker_gz':'workproband/repeat_masker.bed.gz'
 }

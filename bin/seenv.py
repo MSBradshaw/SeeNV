@@ -21,6 +21,8 @@ def get_args():
             -g GENES_FILE      (required) a bed format genes file
             -a GNOMAD          (required) the gnomad sv sites file with allele frequency information
             -t THREADS         (optional) number of threads to use, default 1 (you really want to use more than 1)
+            -v varDB           (required) path to a GZipped bed file for the varDB common variants with an accompanying tabix indexed
+            -m RepeatMasker    (required) path to a GZipped bed file for the RepeatMasker elements with an accompanying tabix indexed
 
         Parameters to accompany --buildref, -b
             -i INPUT_SAMPLES  (required) samples list
@@ -66,6 +68,8 @@ def get_plot_args():
     parser.add_argument('-g',dest='genes_file',help='a bed format genes file',required=True)
     parser.add_argument('-a',dest='gnomad',help='the gnomad sv sites file with allele frequency information',required=True)
     parser.add_argument('-t',dest='threads',help='number of threads to use, default 1 (you really want to use more than 1)',default="1",required=False)
+    parser.add_argument('-v',dest='vardb',help='path to bed file containing varDB common variants',required=True)
+    parser.add_argument('-m',dest='repeat_masker',help='path to bed file containing repeatMasker',required=True)
     return parser.parse_args()
 
 def get_build_args():
@@ -96,13 +100,15 @@ if run_type == 'plotsamples':
     outputdir="{out}"
     refpanel="{ref_db}"
     threads="{threads}"
+    vardb="{vardb}"
+    repeat_masker="{repeat_masker}" 
 
     mkdir -p workproband
     cp $inputsamples workproband/proband.samples
-    cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{3}} workproband/{{0}}.bam"
-    cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{4}} workproband/{{0}}.bai"
-    # cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{5}} workproband/{{0}}.vcf.gz"
-    # cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{6}} workproband/{{0}}.vcf.gz.tbi"
+    cat $inputsamples | gargs --sep="\t" "ln -f -s {{3}} workproband/{{0}}.bam"
+    cat $inputsamples | gargs --sep="\t" "ln -f -s {{4}} workproband/{{0}}.bai"
+    # cat $inputsamples | gargs --sep="\t" "ln -f -s {{5}} workproband/{{0}}.vcf.gz"
+    # cat $inputsamples | gargs --sep="\t" "ln -f -s {{6}} workproband/{{0}}.vcf.gz.tbi"
 
     mkdir -p workproband/Probes
     ln -s "$(cd "$(dirname "$probes")"; pwd)/$(basename "$probes")" workproband/Probes/probes.original.bed
@@ -111,6 +117,12 @@ if run_type == 'plotsamples':
     ln -s "$(cd "$(dirname "$genesfile")"; pwd)/$(basename "$genesfile")" workproband/genes.bed.gz
     ln -s "$(cd "$(dirname "$gnomadfile")"; pwd)/$(basename "$gnomadfile")" workproband/gnomad_sv.bed.gz
     ln -s "$(cd "$(dirname "$gnomadfile")"; pwd)/$(basename "$gnomadfile")".tbi workproband/gnomad_sv.bed.gz.tbi
+    
+    ln -s "$(cd "$(dirname "$vardb")"; pwd)/$(basename "$vardb")" workproband/vardb.bed.gz
+    ln -s "$(cd "$(dirname "$vardb")"; pwd)/$(basename "$vardb")".tbi workproband/vardb.bed.gz.tbi
+
+    ln -s "$(cd "$(dirname "$repeat_masker")"; pwd)/$(basename "$repeat_masker")" workproband/repeat_masker.bed.gz
+    ln -s "$(cd "$(dirname "$repeat_masker")"; pwd)/$(basename "$repeat_masker")".tbi workproband/repeat_masker.bed.gz.tbi
 
     # put the name of the output dirrectory into a textfile for Snakemake to read in
     echo $outputdir > workproband/outputdir.txt
@@ -127,7 +139,10 @@ if run_type == 'plotsamples':
                     ref_db=args.ref_db,
                     genes_file=args.genes_file,
                     af=args.gnomad,
-                    threads=args.threads)
+                    threads=args.threads,
+		    repeat_masker=args.repeat_masker,
+		    vardb=args.vardb)
+
 elif run_type == 'buildref':
     print('Building')
     command="""
@@ -144,10 +159,10 @@ elif run_type == 'buildref':
     # will forably overwrite input files of the same name. All samples named MUST be unique.
     mkdir -p workpanel
     cp $inputsamples workpanel/panel.samples
-    cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{3}} workpanel/{{0}}.bam"
-    cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{4}} workpanel/{{0}}.bai"
-    # cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{5}} workpanel/{{0}}.vcf.gz"
-    # cat $inputsamples | bin/gargs --sep="\t" "ln -f -s {{6}} workpanel/{{0}}.vcf.gz.tbi"
+    cat $inputsamples | gargs --sep="\t" "ln -f -s {{3}} workpanel/{{0}}.bam"
+    cat $inputsamples | gargs --sep="\t" "ln -f -s {{4}} workpanel/{{0}}.bai"
+    # cat $inputsamples | gargs --sep="\t" "ln -f -s {{5}} workpanel/{{0}}.vcf.gz"
+    # cat $inputsamples | gargs --sep="\t" "ln -f -s {{6}} workpanel/{{0}}.vcf.gz.tbi"
  
     mkdir -p workpanel/Probes
     ln -f -s "$(cd "$(dirname "$probes")"; pwd)/$(basename "$probes")" workpanel/Probes/probes.original.bed

@@ -15,7 +15,9 @@ import typing
 import matplotlib
 import matplotlib.patches as patches
 from matplotlib.patches import Rectangle
+import sys
 
+print(sys.argv)
 
 """
 Global Settings
@@ -53,8 +55,7 @@ def get_args():
     parser.add_argument('--calls',
                         '-i',
                         dest='calls',
-                        help='BGZIPED and TABIXED bed file of calls',
-                        action='append')
+                        help='list of comman seporated BGZIPED and TABIXED bed file of calls')
 
     parser.add_argument('--region',
                         '-r',
@@ -1098,6 +1099,9 @@ def main():
     Main function, here just to ensure proper variable scopes
     """
     args = get_args()
+
+    #calls args on comma
+    args.calls = args.calls.split(',')
 
     fig = plt.figure()
     fig.set_size_inches(8, 10, forward=True)
