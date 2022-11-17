@@ -74,7 +74,9 @@ seenv \
 -r RefPanel \
 -g Homo_sapiens.GRCh37.82.genes.bed.gz \
 -a gnomad_v2.1_sv.sites.bed.gz \
--t 50
+-m ExampleData/genomicRepeats.sorted.bed.gz \ 
+-v ExampleData/vardb.sorted.bed.gz \
+-t 50 
 ```
 
 ## Parameter explaination
@@ -117,10 +119,6 @@ Sex: Chromosomal sex of patient (e.g. XY or XX). If unknown just input ZZ.
 BAM: path to the sample's .bam file
 
 BAI: path to the sample's .bai file
-
-VCF: path to the sample's .vcf file
-
-TBI: path to the sample's .vcf.tbi file
 
 ## `-s SITES`
 
