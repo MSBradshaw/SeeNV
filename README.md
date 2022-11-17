@@ -95,6 +95,8 @@ Parameters to accompany --plotsamples, -p:
     -g GENES_FILE      (required) a bed format genes file
     -a GNOMAD          (required) the gnomad sv sites file with allele frequency information
     -t THREADS         (optional) number of threads to use, default 1 (you really want to use more than 1)
+    -v varDB           (required) path to a GZipped bed file for the varDB common variants with an accompanying tabix indexed
+    -m RepeatMasker    (required) path to a GZipped bed file for the RepeatMasker elements with an accompanying tabix indexed
 
 Parameters to accompany --buildref, -b
     -i INPUT_SAMPLES  (required) samples list
