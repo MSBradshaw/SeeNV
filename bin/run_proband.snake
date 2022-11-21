@@ -373,7 +373,6 @@ rule prep_all_calls:
 		"""
 		mkdir -p workproband/FindMaxTMP
 		rm -f workproband/FindMaxTMP/*
-		echo "" > workproband/FindMaxTMP/multiple_savvy_calls.txt
 		while read p; do
 			name=$(basename $p)
 			array=( {params.samples} )

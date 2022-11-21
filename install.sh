@@ -23,7 +23,7 @@ chmod 770 gargs_linux
 mv gargs_linux $conda_bin/gargs
 
 cp bin/seenv.py $conda_bin/seenv
-cp build_panel.snake $conda_bin/build_panel.snake
-cp run_proband.snake $conda_bin/run_proband.snake
+cp bin/build_panel.snake $conda_bin/build_panel.snake
+cp bin/run_proband.snake $conda_bin/run_proband.snake
 cp panel_config.json $conda_bin/panel_config.json
 cp proband_config.json $conda_bin/proband_config.json
