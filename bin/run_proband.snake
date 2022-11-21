@@ -58,7 +58,7 @@ rule all:
 		expand("workproband/FindMax/{num}.max_num_calls.txt", num=NUM_CALLS),
 		"workproband/SplitParams/.split_param_file.ready",
 		"workproband/FindMax/all_maxes.txt",
-		expand("workproband/Plots/{num}.png",num=NUM_CALLS),
+		expand("workproband/PlotsComplete/{num}.done",num=NUM_CALLS),
 		expand("workproband/AdjZscoreRefPanel/{ref_sample}.adj_z.bed.gz", ref_sample=REF_SAMPLES),
 		expand("workproband/AdjZscoreRefPanel/{ref_sample}.adj_z.bed.gz.tbi", ref_sample=REF_SAMPLES),
 		expand("workproband/AlleleCount/{sample}.allele_count.tsv", sample=SAMPLES)
@@ -454,7 +454,7 @@ rule plotter:
 		repeat_masker=config['repeat_masker_gz']
 
 	output:
-		"workproband/Plots/{num}.png"
+		"workproband/PlotsComplete/{num}.done"
 	log:
 		"workproband/logs/plotting_{num}.log"
 	params:
@@ -473,7 +473,7 @@ rule plotter:
 		echo {params.num_calls} >> {log}
 		echo {wildcards.num} >> {log}
 		mkdir -p workproband/Plots/ 2>> {log}
-
+		mkdir -p workproband/PlotsComplete/ 2>> {log}
 		string=$(head -1 {input.param_file}) 2>> {log}
 
 		region=$(cut -d" " -f1 <<< $string) 2>> {log}
@@ -487,7 +487,7 @@ rule plotter:
 		new_plotter.py \
 			-i $inputs \
 			-s ${{samplename%.*}} \
-			--output {output} \
+			--output workproband/Plots/"${{sample}}.${{region}}.${{svtype}}".png \
 			--coverage_scores {input.adj_scores} \
 			--sites {input.probes} \
 			--window 50000 \
@@ -497,7 +497,7 @@ rule plotter:
 			--gnomad {input.gnomad_sv} \
 			--vardb {input.vardb} \
 			--repeatmasker {input.repeat_masker}
-
+		touch {output}
 		"""
 
 
