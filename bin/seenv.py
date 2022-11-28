@@ -18,7 +18,6 @@ def get_args():
             -c ALL_CALLS       (required) calls file. Each line should be a path to a set of calls in bed format
             -o OUTPUT          (required) output directory, where to save the plots
             -r REF_DB          (required) path to reference db created by the --buildref function of SeeNV
-            -g GENES_FILE      (required) a bed format genes file
             -a GNOMAD          (required) the gnomad sv sites file with allele frequency information
             -t THREADS         (optional) number of threads to use, default 1 (you really want to use more than 1)
             -v varDB           (required) path to a GZipped bed file for the varDB common variants with an accompanying tabix indexed
@@ -65,7 +64,6 @@ def get_plot_args():
     parser.add_argument('-c',dest='all_calls',help='calls file. Each line should be a path to a set of calls in bed format',required=True)
     parser.add_argument('-o',dest='output',help='output directory, where to save the plots',required=True)
     parser.add_argument('-r',dest='ref_db',help='path to reference db created by the --buildref function of SeeNV',required=True)
-    parser.add_argument('-g',dest='genes_file',help='a bed format genes file',required=True)
     parser.add_argument('-a',dest='gnomad',help='the gnomad sv sites file with allele frequency information',required=True)
     parser.add_argument('-t',dest='threads',help='number of threads to use, default 1 (you really want to use more than 1)',default="1",required=False)
     parser.add_argument('-v',dest='vardb',help='path to bed file containing varDB common variants',required=True)
@@ -95,7 +93,6 @@ if run_type == 'plotsamples':
     inputsamples="{samples}"
     probes="{probes}"
     calls="{calls}"
-    genesfile="{genes_file}"
     gnomadfile="{af}"
     outputdir="{out}"
     refpanel="{ref_db}"
@@ -114,7 +111,6 @@ if run_type == 'plotsamples':
     ln -s "$(cd "$(dirname "$probes")"; pwd)/$(basename "$probes")" workproband/Probes/probes.original.bed
     mkdir -p workproband/Calls
     ln -s "$(cd "$(dirname "$calls")"; pwd)/$(basename "$calls")" workproband/Calls/all.calls.original.txt
-    ln -s "$(cd "$(dirname "$genesfile")"; pwd)/$(basename "$genesfile")" workproband/genes.bed.gz
     ln -s "$(cd "$(dirname "$gnomadfile")"; pwd)/$(basename "$gnomadfile")" workproband/gnomad_sv.bed.gz
     ln -s "$(cd "$(dirname "$gnomadfile")"; pwd)/$(basename "$gnomadfile")".tbi workproband/gnomad_sv.bed.gz.tbi
     
@@ -137,7 +133,6 @@ if run_type == 'plotsamples':
                     calls=args.all_calls,
                     out=args.output,
                     ref_db=args.ref_db,
-                    genes_file=args.genes_file,
                     af=args.gnomad,
                     threads=args.threads,
 		    repeat_masker=args.repeat_masker,

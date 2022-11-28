@@ -45,8 +45,8 @@ rule all:
 		expand("workproband/RPM/{sample}.probe.rpm_rate.bed.gz", sample=SAMPLES),
                 expand("workproband/RPM/{sample}.probe.rpm_rate.bed.gz.tbi", sample=SAMPLES),
 		"workproband/Params/call_plotting_params.txt",
-		"workproband/Exons/labeled_exons.bed.gz",
-		"workproband/Exons/labeled_exons.bed.gz.tbi",
+		#"workproband/Exons/labeled_exons.bed.gz",
+		#"workproband/Exons/labeled_exons.bed.gz.tbi",
 		expand("workproband/ProbeCoverage/{sample}_probe.cover.mean.stdev.bed.gz", sample=SAMPLES),
 		expand("workproband/ProbeCoverage/{sample}_probe.cover.mean.stdev.bed.gz.tbi", sample=SAMPLES),
 		expand('workproband/ProbeCoverageRefPanel/{ref_sample}.probe.rpm_rate.bed.gz', ref_sample=REF_SAMPLES),
@@ -391,8 +391,8 @@ rule prep_all_calls:
 
 rule find_max:
 	input:
-		exons="workproband/Exons/labeled_exons.bed.gz",
-		exons_tbi="workproband/Exons/labeled_exons.bed.gz.tbi",
+		exons="workproband/Probes/probes.sorted.bed.gz",
+		exons_tbi="workproband/Probes/probes.sorted.bed.gz.tbi",
 		all_calls="workproband/FindMaxTMP/.ready",
 		param_file=Checkpoint_MakePattern_prime('workproband/SplitParams/{num}.txt'),
 		marker_file="workproband/SplitParams/.split_param_file.ready",
