@@ -67,16 +67,15 @@ seenv \
 ```
 seenv \
 -p \
--i Example/cohort.samples \
--s Example/probes.bed \
--c Example/all_calls.txt \
--o OutputDir \
--r RefPanel \
--g Homo_sapiens.GRCh37.82.genes.bed.gz \
--a gnomad_v2.1_sv.sites.bed.gz \
--m ExampleData/genomicRepeats.sorted.bed.gz \ 
+-i ExampleData/proband_sample_list.tsv \
+-s ExampleData/SureSelect_All_Exon_V2.bed \
+-c ExampleData/17_bi_300_samples_calls.txt \
+-a ExampleData/gnomad_v2.1_sv.sites.bed.gz \
+-t 64 \
 -v ExampleData/vardb.sorted.bed.gz \
--t 50 
+-m ExampleData/genomicRepeats.sorted.bed.gz \
+-r ReferenceDB/ \
+-o TestPlots
 ```
 
 ## Parameter explaination
