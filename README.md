@@ -67,16 +67,15 @@ seenv \
 ```
 seenv \
 -p \
--i Example/cohort.samples \
--s Example/probes.bed \
--c Example/all_calls.txt \
--o OutputDir \
--r RefPanel \
--g Homo_sapiens.GRCh37.82.genes.bed.gz \
--a gnomad_v2.1_sv.sites.bed.gz \
--m ExampleData/genomicRepeats.sorted.bed.gz \ 
+-i ExampleData/proband_sample_list.tsv \
+-s ExampleData/SureSelect_All_Exon_V2.bed \
+-c ExampleData/17_bi_300_samples_calls.txt \
+-a ExampleData/gnomad_v2.1_sv.sites.bed.gz \
+-t 64 \
 -v ExampleData/vardb.sorted.bed.gz \
--t 50 
+-m ExampleData/genomicRepeats.sorted.bed.gz \
+-r ReferenceDB/ \
+-o TestPlots
 ```
 
 ## Parameter explaination
@@ -92,7 +91,6 @@ Parameters to accompany --plotsamples, -p:
     -c ALL_CALLS       (required) calls file. Each line should be a path to a set of calls in bed format
     -o OUTPUT          (required) output directory, where to save the plots
     -r REF_DB          (required) path to reference db created by the --buildref function of SeeNV
-    -g GENES_FILE      (required) a bed format genes file
     -a GNOMAD          (required) the gnomad sv sites file with allele frequency information
     -t THREADS         (optional) number of threads to use, default 1 (you really want to use more than 1)
     -v varDB           (required) path to a GZipped bed file for the varDB common variants with an accompanying tabix indexed
@@ -151,20 +149,6 @@ When using the `-p` or `--plotsamples` flag `-o` is the path for where the plots
 ## `-r REF_DB`
 
 Path to a reference panel database (the output created when using the `-b` flag)
-
-## `-g GENES_FILE`
-
-Path to a gzipped or bgzipped bed formated file file with the columns:
-
-Chromosome: the Chromosome number/name (if listing chromsome 1 input 1 not chr1)
-
-Start: base number at which the calls starts
-
-End: base number at which the calls ends
-
-Gene symbol: the gene symbol
-
-You can either download data and format it from [biomart](http://uswest.ensembl.org/biomart/martview/) or use our HG19 based verion found in Example/hg19.genes.bed.gz
 
 ## `-a GNOMAD with Allele Frequency data`
 
