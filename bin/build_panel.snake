@@ -97,7 +97,7 @@ rule get_probe_reads_per_million:
 		"workpanel/RPM/{sample}.probe.rpm_rate.bed.gz.tbi"
 	shell:
 		"""
-		python bin/get_rpm_rates.py \
+		get_rpm_rates.py \
 		-m {input.per_base_bed_gz} \
 		--regions_file {input.probes_gz} \
 		--num_reads {input.total_reads} \
