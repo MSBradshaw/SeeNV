@@ -1,3 +1,6 @@
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
 conda create --name seenv --file Install/seenv.env -y
 
 conda activate seenv
