@@ -55,9 +55,9 @@ In order to generate plots, a reference panel database is required. You can eith
 ```
 seenv \
 -b \
--i panel.samples \
--s ../WES_TargetCoverage_v2.bed \
--c ../all_calls.txt \
+-i ExampleData/ref_panel_sample_list.tsv \
+-s ExampleData/SureSelect_All_Exon_V2.bed \
+-c ExampleData/17_bi_300_samples_calls.txt \
 -o ReferenceDB \
 -t 32
 ```
