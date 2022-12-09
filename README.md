@@ -152,7 +152,15 @@ Path to a reference panel database (the output created when using the `-b` flag)
 
 ## `-a GNOMAD with Allele Frequency data`
 
-path to the gnomAD SV sites file in .beg.gz format with an accompanying .beg.gz.tbi file in the same dirrectory. Download [.beg.gz file](https://storage.googleapis.com/gcp-public-data--gnomad/papers/2019-sv/gnomad_v2.1_sv.sites.bed.gz) and [.beg.gz.tbi](https://storage.googleapis.com/gcp-public-data--gnomad/papers/2019-sv/gnomad_v2.1_sv.sites.bed.gz.tbi)
+path to the gnomAD SV sites file in .beg.gz format with an accompanying .beg.gz.tbi file in the same dirrectory. This can be found in `ExampleData/gnomad_v2.1_sv.sites.bed.gz` or can the `bed.gz` and and `.tbi` be downloaded from [here](https://storage.googleapis.com/gcp-public-data--gnomad/papers/2019-sv/gnomad_v2.1_sv.sites.bed.gz) and [here](https://storage.googleapis.com/gcp-public-data--gnomad/papers/2019-sv/gnomad_v2.1_sv.sites.bed.gz.tbi)
+
+## `-m RepeatMasker `
+
+path to a GZipped bed file for the varDB common variants with an accompanying tabix indexed. This is can be found in `ExampleData/genomicRepeats.sorted.bed.gz`.
+
+## `-v varDB`
+
+path to a GZipped bed file for the varDB common variants with an accompanying tabix indexed. This can be found in `ExampleData/vardb.sorted.bed.gz`
 
 ## `-t THREADS`
 
