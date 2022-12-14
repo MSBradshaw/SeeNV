@@ -55,9 +55,7 @@ rule all:
 		expand("workproband/AdjZscore/{sample}.adj_z.bed.gz.tbi", sample=SAMPLES),
 		"workproband/MergedAdjZscore/adj_scores.bed.gz",
 		"workproband/MergedAdjZscore/adj_scores.bed.gz.tbi",
-		expand("workproband/FindMax/{num}.max_num_calls.txt", num=NUM_CALLS),
 		"workproband/SplitParams/.split_param_file.ready",
-		"workproband/FindMax/all_maxes.txt",
 		expand("workproband/PlotsComplete/{num}.done",num=NUM_CALLS),
 		expand("workproband/AdjZscoreRefPanel/{ref_sample}.adj_z.bed.gz", ref_sample=REF_SAMPLES),
 		expand("workproband/AdjZscoreRefPanel/{ref_sample}.adj_z.bed.gz.tbi", ref_sample=REF_SAMPLES),
@@ -388,55 +386,6 @@ rule prep_all_calls:
 		done <{input.all_calls}
 		touch workproband/FindMaxTMP/.ready
 		"""
-
-rule find_max:
-	input:
-		exons="workproband/Probes/probes.sorted.bed.gz",
-		exons_tbi="workproband/Probes/probes.sorted.bed.gz.tbi",
-		all_calls="workproband/FindMaxTMP/.ready",
-		param_file=Checkpoint_MakePattern_prime('workproband/SplitParams/{num}.txt'),
-		marker_file="workproband/SplitParams/.split_param_file.ready",
-		coverage=expand("workproband/ProbeCoverage/{sample}_probe.cover.mean.stdev.bed.gz", sample=SAMPLES),
-		coverage_tbi=expand("workproband/ProbeCoverage/{sample}_probe.cover.mean.stdev.bed.gz.tbi", sample=SAMPLES)
-
-	output:
-		"workproband/FindMax/{num}.max_num_calls.txt"
-	log:
-		"workproband/logs/{num}.error.txt"
-	shell:
-		"""
-		mkdir -p workproband/FindMax/ 2>> {log}
-		
-		string=$(head -1 {input.param_file}) 2>> {log}
-
-
-		region=$(cut -d" " -f1 <<< $string) 2>> {log}
-		svtype=$(cut -d" " -f2 <<< $string) 2>> {log}
-		samplename=$(cut -d" " -f3 <<< $string) 2>> {log}
-		sample=${{samplename%.*}} 2>> {log}
-		callsfile=$(cut -d" " -f4 <<< $string) 2>> {log}
-		regionclean=$(cut -d" " -f5 <<< $string) 2>> {log}
-		svtype2=$(cut -d" " -f6 <<< $string) 2>> {log}
-
-		get_max_number_of_calls.py --sample ${{samplename%.*}} \
-			--exons {input.exons} \
-			--window 100000 \
-			--region ${{region}} \
-			--depth workproband/ProbeCoverage/${{sample}}_probe.cover.mean.stdev.bed \
-			--all_calls workproband/FindMaxTMP/multiple_savvy_calls.txt >> {output} 2>> {log}
-		"""
-
-rule aggregate_maxes:
-	input:
-		expand("workproband/FindMax/{num}.max_num_calls.txt", num=NUM_CALLS)
-	output:
-		"workproband/FindMax/all_maxes.txt"
-	shell:
-		"""
-		cat {input} > workproband/FindMax/tmp.txt
-		grep -v ValueError workproband/FindMax/tmp.txt > {output}
-		"""
-
 rule plotter:
 	input:
 		probes="workproband/Probes/probes.sorted.bed.gz",
@@ -446,7 +395,6 @@ rule plotter:
 		marker_file="workproband/SplitParams/.split_param_file.ready",
 		coverage=expand("workproband/ProbeCoverage/{sample}_probe.cover.mean.stdev.bed.gz", sample=SAMPLES),
 		coverage_tbi=expand("workproband/ProbeCoverage/{sample}_probe.cover.mean.stdev.bed.gz.tbi", sample=SAMPLES),
-		all_maxes="workproband/FindMax/all_maxes.txt",
 		adj_scores="workproband/MergedAdjZscore/adj_scores.bed.gz",
 		adj_scores_tbi="workproband/MergedAdjZscore/adj_scores.bed.gz.tbi",
 		gnomad_sv=config['gnomad_sv_bed_gz'],
