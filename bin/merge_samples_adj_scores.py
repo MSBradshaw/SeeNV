@@ -27,7 +27,8 @@ def main():
     first_file = True
 
     file_i = 0
-
+    if args.adj_score_dir[-1] != '/':
+        args.adj_score_dir += '/'
     for adj_file in glob.glob(args.adj_score_dir + '*.adj_z.bed.gz'):
         sample = adj_file.split('/')[-1].split('.')[0]
         samples.append(sample)
