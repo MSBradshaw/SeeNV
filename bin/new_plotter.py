@@ -165,6 +165,9 @@ def get_calls(_files: typing.List[str], _region: utils.Interval, _with_sample_id
         except ValueError:
             print('Warning: no overlapping calls in ' + _f)
             continue
+        print(len(_tmp))
+        for x in _tmp:
+            print('\t',x.data)
         _f_name = _f.split('/')[-1].split('.')[0]
         [x.data.append(_f_name) for x in _tmp]
         _keepers = []
@@ -173,7 +176,8 @@ def get_calls(_files: typing.List[str], _region: utils.Interval, _with_sample_id
             _keepers = [x for x in _tmp if sum(_with_sample_id in y for y in x.data) > 0]
         # get calls without a specific sample
         if _without_sample_id is not None:
-            _keepers = _keepers + [x for x in _tmp if sum(_without_sample_id not in y for y in x.data) == 0]
+            print('Without',_without_sample_id)
+            _keepers = _keepers + [x for x in _tmp if x.data[1] != _without_sample_id]
         _calls = _calls + _keepers
     print('Post loop')
     print(_calls)
@@ -296,7 +300,9 @@ def plot_sample_coverage_stats(_ax: plt.Axes, _region: utils.Interval, _scores_f
     _sites_tabix = None
     if _sites is not None:
         _sites_tabix = pysam.TabixFile(_sites)
-
+    
+    print('r',_region)
+    print('f',_scores_file)
     _scores = utils.get_intervals_in_region(_region, _scores_file)
 
     _site_pos = []
@@ -1102,7 +1108,7 @@ def main():
 
     #calls args on comma
     args.calls = args.calls.split(',')
-
+    print('Calls',args.calls)
     fig = plt.figure()
     fig.set_size_inches(8, 10, forward=True)
     # fig.patch.set_facecolor('#f6f6f6')
@@ -1180,7 +1186,7 @@ def main():
     print(args.calls)
     in_sample_calls = get_calls(args.calls, target_window, _with_sample_id=args.sample)
     for x in in_sample_calls:
-        print(x)
+        print('in sample calls', x)
     # input_file_colors_options = ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c']
     input_file_hatch_options = ['////', '....', '||||', '----', '++++', 'xxxx', 'oooo', '****', 'OOOO', '\\\\\\\\']
     # index x.data[-1] is the file the call came from
@@ -1192,6 +1198,7 @@ def main():
     # find the calls that overlap with the given sample's call but are not that sample.
     # This is used in the main plot and the Cohort Calls plot
     non_sample_overlapping_calls = get_calls(args.calls, target_window, _without_sample_id=args.sample)
+    print('Non-Sample calls',non_sample_overlapping_calls)
     
     """
     Mark this sample's coverage stats
