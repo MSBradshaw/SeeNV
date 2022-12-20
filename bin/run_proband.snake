@@ -239,15 +239,21 @@ rule link_ref_panel_rpm:
 	"""
 	input:
 		bedgz=config['reference_panel'] + "RPM/{ref_sample}.probe.rpm_rate.bed.gz",
-		tbi=config['reference_panel'] + "RPM/{ref_sample}.probe.rpm_rate.bed.gz.tbi"
+		tbi=config['reference_panel'] + "RPM/{ref_sample}.probe.rpm_rate.bed.gz.tbi",
+		adj_bed=config['reference_panel'] + "AdjZscore/{ref_sample}.adj_z.bed.gz",
+		adj_tbi=config['reference_panel'] + "AdjZscore/{ref_sample}.adj_z.bed.gz.tbi"	
 	output:
 		'workproband/ProbeCoverageRefPanel/{ref_sample}.probe.rpm_rate.bed.gz',
-		'workproband/ProbeCoverageRefPanel/{ref_sample}.probe.rpm_rate.bed.gz.tbi'
+		'workproband/ProbeCoverageRefPanel/{ref_sample}.probe.rpm_rate.bed.gz.tbi',
+		'workproband/AdjZscoreRefPanel/{ref_sample}.adj_z.bed.gz',
+		'workproband/AdjZscoreRefPanel/{ref_sample}.adj_z.bed.gz.tbi'
 	shell:
 		"""
 		mkdir -p workproband/ProbeCoverageRefPanel/
 		cp {input.bedgz} workproband/ProbeCoverageRefPanel/
 		cp {input.tbi} workproband/ProbeCoverageRefPanel/
+		cp {input.adj_bed} workproband/AdjZscoreRefPanel/
+		cp {input.adj_tbi} workproband/AdjZscoreRefPanel/
 		"""
 
 
@@ -273,29 +279,6 @@ rule get_probe_cover_mean_std:
 		tabix -p bed {output.bedgz}
 		"""
 
-rule get_probe_cover_mean_std_for_reference_panel:
-#	"""
-#	Calculate various stats about RPM coverage by comparing one reference panel sampel to the rest of the referene panel
-#	"""
-	input:
-		ref_rpm=expand('workproband/ProbeCoverageRefPanel/{ref_sample}.probe.rpm_rate.bed.gz', ref_sample=REF_SAMPLES),
-		ref_rpm_tbi=expand('workproband/ProbeCoverageRefPanel/{ref_sample}.probe.rpm_rate.bed.gz.tbi', ref_sample=REF_SAMPLES),
-		ref_sample='workproband/ProbeCoverageRefPanel/{ref_sample}.probe.rpm_rate.bed.gz',
-		ref_sample_tbi='workproband/ProbeCoverageRefPanel/{ref_sample}.probe.rpm_rate.bed.gz.tbi'
-	output:
-		bedgz="workproband/ProbeCoverageRefPanel/{ref_sample}_probe.cover.mean.stdev.bed.gz",
-		tbi="workproband/ProbeCoverageRefPanel/{ref_sample}_probe.cover.mean.stdev.bed.gz.tbi",
-		bed="workproband/ProbeCoverageRefPanel/{ref_sample}_probe.cover.mean.stdev.bed"
-	threads: 2
-	shell:  
-		"""
-		mkdir -p workproband/ProbeCoverageRefPanel
-		get_regions_zscores.py -r workproband/ProbeCoverageRefPanel/ -s {input.ref_sample} | bgzip -c > {output.bedgz}
-		cp {output.bedgz} workproband/ProbeCoverageRefPanel/{wildcards.ref_sample}_probe.cover.mean.stdev.copy.bed.gz
-		gunzip workproband/ProbeCoverageRefPanel/{wildcards.ref_sample}_probe.cover.mean.stdev.copy.bed.gz
-		mv workproband/ProbeCoverageRefPanel/{wildcards.ref_sample}_probe.cover.mean.stdev.copy.bed {output.bed}
-		tabix -p bed {output.bedgz}
-		"""
 
 rule get_adj_zscore:
 #	"""
@@ -316,27 +299,6 @@ rule get_adj_zscore:
 			| bgzip -c > {output.bedgz}
 		tabix -p bed {output.bedgz}
 			
-		"""
-
-rule get_adj_zscore_for_ref_panel:
-#	"""
-#	Calculate the z-score of the RPM data comparing each of the reference panel samples to the panel
-#	"""
-	input:
-		ref_sample_rpm="workproband/ProbeCoverageRefPanel/{ref_sample}.probe.rpm_rate.bed.gz",
-		ref_sample_coverage="workproband/ProbeCoverageRefPanel/{ref_sample}_probe.cover.mean.stdev.bed.gz",
-		ref_sample_coverage_tbi="workproband/ProbeCoverageRefPanel/{ref_sample}_probe.cover.mean.stdev.bed.gz.tbi"
-	output:
-		bedgz="workproband/AdjZscoreRefPanel/{ref_sample}.adj_z.bed.gz",
-		tbi="workproband/AdjZscoreRefPanel/{ref_sample}.adj_z.bed.gz.tbi"
-	shell:
-		"""
-		mkdir -p workproband/AdjZscoreRefPanel
-		get_coverage_zscores.py \
-			-r {input.ref_sample_rpm} \
-			-s {input.ref_sample_coverage} \
-			| bgzip -c > {output.bedgz}
-		tabix -p bed {output.bedgz}
 		"""
 
 rule merge_adj_scores:
