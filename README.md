@@ -1,5 +1,7 @@
 <p align="center"><img src="https://github.com/MSBradshaw/SeeNV/blob/main/Imgs/seenv.png?raw=true" width="80%"/></p>
 
+<p align="center"><img src="https://github.com/MSBradshaw/SeeNV/blob/main/Imgs/dup.png?raw=true" width="80%"/></p>
+
 SeeNV is still being developed. It can be download and used but is by no means exaustively tested. 
 
 Find a bug? Create an [issue](https://github.com/MSBradshaw/SeeNV/issues)! 
@@ -165,3 +167,10 @@ path to a GZipped bed file for the varDB common variants with an accompanying ta
 ## `-t THREADS`
 
 The number of _cores_ (not threads) to be used. Default is 1, but you really should use many more. For reference, using 32 cores, the provided reference panel database, and processing/plotting 6 samples with 300 calls takes us ~2 hours.
+
+# Example output figures
+## Deletion
+<p align="center"><img src="https://github.com/MSBradshaw/SeeNV/blob/main/Imgs/del.png?raw=true" width="80%"/></p>
+
+## Duplication
+<p align="center"><img src="https://github.com/MSBradshaw/SeeNV/blob/main/Imgs/dup.png?raw=true" width="80%"/></p>
