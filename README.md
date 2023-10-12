@@ -2,25 +2,25 @@
 
 <p align="center"><img src="https://github.com/MSBradshaw/SeeNV/blob/main/Imgs/dup.png?raw=true" width="80%"/></p>
 
-SeeNV is still being developed. It can be download and used but is by no means exaustively tested. 
+SeeNV is still being developed. It can be downloaded and used but is by no means exhaustively tested. 
 
 Find a bug? Create an [issue](https://github.com/MSBradshaw/SeeNV/issues)! 
 
 Have a feature idea? Create an [issue](https://github.com/MSBradshaw/SeeNV/issues)!
 
-SeeNV provides comprehensive yet easy to digest visualizations for each call in a sample and depicts relevant statistics comparing a sample to a cohort of other samples. 
-It is known that the accuracy and reliability of CNV calls increases when using multiple callers and parameter sets, for this reason SeeNV also provides a way to visualize multiple callers or bin sizes simultaneously — a feature not known to exist in other tools. 
+SeeNV provides comprehensive yet easy-to-digest visualizations for each call in a sample and depicts relevant statistics comparing a sample to a cohort of other samples. 
+It is known that the accuracy and reliability of CNV calls increase when using multiple callers and parameter sets, for this reason, SeeNV also provides a way to visualize multiple callers or bin sizes simultaneously — a feature not known to exist in other tools. 
 Combined with the tool [PlotCritic](https://github.com/jbelyeu/PlotCritic), we found that a clinician can accurately filter through roughly 200 calls in 20 minutes, or just 6 seconds per call on average. 
-SeeNV is a command line tool that can be run as it’s own or added into your variant calling pipelines.
+SeeNV is a command line tool that can be run on its own or added to your variant calling pipelines.
 
 
 # Installation
 
-SeeNV is currently only usable on Linux based systems. 
+SeeNV is currently only usable on Linux-based systems. 
 
-SeeNV requires you have [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) installed.
+SeeNV requires you to have [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) installed.
 
-Download this repo, move into it and run the installation script!
+Download this repo, move into it, and run the installation script!
 
 ```
 git clone https://github.com/MSBradshaw/SeeNV.git
@@ -28,7 +28,7 @@ cd SeeNV
 source install.sh
 ```
 
-The install script will create a conda envrionment called `seenv` with all the necessary python dependancies for SeeNV. It will also download a the following external non-python tools:
+The install script will create a conda environment called `seenv` with all the necessary python dependencies for SeeNV. It will also download the following external non-python tools:
 
 [Snakemake](https://snakemake.readthedocs.io/en/stable/index.html)
 
@@ -40,19 +40,19 @@ The install script will create a conda envrionment called `seenv` with all the n
 
 [bedtools](https://bedtools.readthedocs.io/en/latest/)
 
-All these dependacies will be placed in the bin direcoty of the cnviz conda environment.
+All these dependencies will be placed in the bin directory of the seenv conda environment.
 
-As long as the conda environemnt is activated the `seenv` command can now be used anywhere.
+As long as the conda environment is activated the `seenv` command can now be used anywhere.
 
 # Usage
 
-SeeNV requires it's conda environment in order to work, start the conda environment:
+SeeNV requires its conda environment in order to work, start the conda environment:
 
 `conda activate seenv`
 
 ## Build a Reference DB
 
-In order to generate plots, a reference panel database is required. You can either create your own or use the one included with this repository.
+In order to generate plots, a reference panel database is required. You can either create your own or use the one included in this repository.
 
 ```
 seenv \
@@ -80,7 +80,7 @@ seenv \
 -o TestPlots
 ```
 
-## Parameter explaination
+## Parameter explanation
 ```
 One of the following options is required
 
@@ -140,7 +140,7 @@ End: base number at which the call ends
 
 Call type: type of call made (Duplication, Deletion ect)
 
-Sample Id: Sample Id the call pertains to, should match Sample Id's found in `-i INPUT_SAMPLES` 
+Sample Id: Sample Id the call pertains to, should match Sample Ids found in `-i INPUT_SAMPLES` 
 
 ## `-o OUTPUT`
 
@@ -154,11 +154,11 @@ Path to a reference panel database (the output created when using the `-b` flag)
 
 ## `-a GNOMAD with Allele Frequency data`
 
-path to the gnomAD SV sites file in .beg.gz format with an accompanying .beg.gz.tbi file in the same dirrectory. This can be found in `ExampleData/gnomad_v2.1_sv.sites.bed.gz` or can the `bed.gz` and and `.tbi` be downloaded from [here](https://storage.googleapis.com/gcp-public-data--gnomad/papers/2019-sv/gnomad_v2.1_sv.sites.bed.gz) and [here](https://storage.googleapis.com/gcp-public-data--gnomad/papers/2019-sv/gnomad_v2.1_sv.sites.bed.gz.tbi)
+path to the gnomAD SV sites file in .beg.gz format with an accompanying .beg.gz.tbi file in the same directory. This can be found in `ExampleData/gnomad_v2.1_sv.sites.bed.gz` or can the `bed.gz` and and `.tbi` be downloaded from [here](https://storage.googleapis.com/gcp-public-data--gnomad/papers/2019-sv/gnomad_v2.1_sv.sites.bed.gz) and [here](https://storage.googleapis.com/gcp-public-data--gnomad/papers/2019-sv/gnomad_v2.1_sv.sites.bed.gz.tbi)
 
 ## `-m RepeatMasker `
 
-path to a GZipped bed file for the varDB common variants with an accompanying tabix indexed. This is can be found in `ExampleData/genomicRepeats.sorted.bed.gz`.
+path to a GZipped bed file for the varDB common variants with an accompanying tabix indexed. This can be found in `ExampleData/genomicRepeats.sorted.bed.gz`.
 
 ## `-v varDB`
 
@@ -166,7 +166,7 @@ path to a GZipped bed file for the varDB common variants with an accompanying ta
 
 ## `-t THREADS`
 
-The number of _cores_ (not threads) to be used. Default is 1, but you really should use many more. For reference, using 32 cores, the provided reference panel database, and processing/plotting 6 samples with 300 calls takes us ~2 hours.
+The number of _cores_ (not threads) to be used. The default is 1, but you really should use many more. For reference, using 32 cores, the provided reference panel database, and processing/plotting 6 samples with 300 calls takes us ~2 hours.
 
 # Example output figures
 ## Deletion
