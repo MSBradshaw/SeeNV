@@ -128,6 +128,8 @@ BAI: path to the sample's .bai file
 
 ## `-c CALLS `
 
+See example `ExampleData/17_bi_300_samples_calls.dup.bed`
+
 Bed file with the following information separated by tabs:
 
 Chromosome: the Chromosome number/name (if listing chromosome 1 input 1, not chr1)
