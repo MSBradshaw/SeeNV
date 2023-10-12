@@ -429,5 +429,3 @@ rule collect_allele_counts:
 	resources:
 		mem_mb=20000
 	shell: "mkdir -p workproband/AlleleCount; touch {output}"
-	
-

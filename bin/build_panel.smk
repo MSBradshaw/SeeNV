@@ -165,16 +165,3 @@ rule create_panel_db:
 		done <{input.all_calls}
 		cp {input.sample_list} {output}
 		"""
-		
-
-
-
-
-
-
-
-
-
-
-
-
