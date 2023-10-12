@@ -90,7 +90,7 @@ One of the following options is required
 Parameters to accompany --plotsamples, -p:
     -i INPUT_SAMPLES   (required) samples list
     -s SITES           (required) genomic sites bed file
-    -c ALL_CALLS       (required) calls file. Each line should be a path to a set of calls in bed format
+    -c CALLS           (required) bed file containing all calls with columns: chrom, start, end, cnv_type, sample_name
     -o OUTPUT          (required) output directory, where to save the plots
     -r REF_DB          (required) path to reference db created by the --buildref function of SeeNV
     -a GNOMAD          (required) the gnomad sv sites file with allele frequency information
@@ -101,7 +101,7 @@ Parameters to accompany --plotsamples, -p:
 Parameters to accompany --buildref, -b
     -i INPUT_SAMPLES  (required) samples list
     -s SITES          (required) genomic sites bed file
-    -c ALL_CALLS      (required) calls file. Each line should be a path to a set of calls in bed format
+    -c CALLS          (required) bed file containing all calls with columns: chrom, start, end, cnv_type, sample_name
     -o OUTPUT         (required) output directory, reference panel database
     -t THREADS        (optional) number of threads to use, default 1 (you really want to use more than 1)
 ```
@@ -126,17 +126,15 @@ BAI: path to the sample's .bai file
 
 [BED](https://genome.ucsc.edu/FAQ/FAQformat.html#format1) formatted file with sites of interest within the genome. We use the regions our probes target for whole exome sequencing. See `Example/probes.bed`
 
-## `-c ALL_CALLS `
+## `-c CALLS `
 
-File that contains a list of files containing calls. See `Example/all_calls.txt`.
+Bed file with the following information separated by tabs:
 
-Each file contains the path to a set of calls in a bed file with the following information seporated by tabs:
+Chromosome: the Chromosome number/name (if listing chromosome 1 input 1, not chr1)
 
-Chromosome: the Chromosome number/name (if listing chromsome 1 input 1 not chr1)
+Start: base number at which the call starts
 
-Start: base number at which the calls starts
-
-End: base number at which the calls ends
+End: base number at which the call ends
 
 Call type: type of call made (Duplication, Deletion ect)
 
