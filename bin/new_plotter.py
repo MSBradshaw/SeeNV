@@ -207,7 +207,7 @@ def add_interval_box(_ax: plt.Axes, _interval: utils.Interval, _color: str, _a: 
 
 
 def mark_calls(_ax: plt.Axes, _ax_legend: plt.Axes, _calls: typing.List[utils.Interval], _hatch_map: typing.Dict,
-               _x_range: typing.Tuple[int, int]) -> None:
+               _x_range: typing.Tuple[int, int], _current_call: utils.Interval = None) -> None:
     """
     Mark all the _calls on the given _ax, color based on _color_map
     param _ax: matplotlib Axes object to plot on
@@ -256,6 +256,8 @@ def mark_calls(_ax: plt.Axes, _ax_legend: plt.Axes, _calls: typing.List[utils.In
                              facecolor=_Y_info[_i][_j][_color_idx], alpha=_Y_info[_i][_j][_alpha_idx], linestyle=_edge_type)
             # Add the patch to the Axes
             _ax.add_patch(_rect)
+            if _current_call.start == _call.start and _call.end == _current_call.end:
+                _ax.text(_call.start + _span / 2, _i, '*')
             # if the call extends past the x limits, add arrow
             if _call.start < _x_range[0]:
                 # plot arrows if call goes out of range
@@ -1208,7 +1210,7 @@ def main():
                                _x_range=(target_window.start, target_window.end),
                                _non_sample_overlapping_calls=non_sample_overlapping_calls)
     mark_calls(samp_calls_ax, samp_calls_ax_legend, in_sample_calls, input_file_hatch_map,
-               _x_range=(target_window.start, target_window.end))
+               _x_range=(target_window.start, target_window.end), _current_call=target)
 
     """
     Probe quality heatmap

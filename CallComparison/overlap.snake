@@ -22,29 +22,37 @@ rule all:
 		expand('work/{caller}.DEL.bed',caller=CALLERS),
 		expand('work/{caller}.DUP.bed',caller=CALLERS),
 		expand('work/{sample}.{caller}.{cnv_type}.filtered.bed',sample=SAMPLES,caller=CALLERS,cnv_type=TYPES),
-                expand('work/Reciprocal/{sample}.savvy_x_gatk.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
-                expand('work/Reciprocal/{sample}.savvy_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
-                expand('work/Reciprocal/{sample}.gatk_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
-		expand('work/BEDPE/{sample}.{caller}.{cnv_type}.filtered.bedpe',sample=SAMPLES,caller=CALLERS,cnv_type=TYPES),
-		#expand('work/BreakPoint/{sample}.savvy_x_gatk.{cnv_type}.breakpoint.filtered.bedpe',sample=SAMPLES,caller=CALLERS,cnv_type=TYPES),
-		#expand('work/BreakPoint/{sample}.savvy_x_cnvkit.{cnv_type}.breakpoint.filtered.bedpe',sample=SAMPLES,caller=CALLERS,cnv_type=TYPES),
-		#expand('work/BreakPoint/{sample}.gatk_x_cnvkit.{cnv_type}.breakpoint.filtered.bedpe',sample=SAMPLES,caller=CALLERS,cnv_type=TYPES),
-		expand('work/BreakPoint/{slop}/{sample}.savvy_x_gatk.{cnv_type}.breakpoint.filtered.bedpe',slop=SLOPS,sample=SAMPLES,cnv_type=TYPES),
-		expand('work/BreakPoint/{slop}/{sample}.savvy_x_cnvkit.{cnv_type}.breakpoint.filtered.bedpe',slop=SLOPS,sample=SAMPLES,cnv_type=TYPES),
-		expand('work/BreakPoint/{slop}/{sample}.gatk_x_cnvkit.{cnv_type}.breakpoint.filtered.bedpe',slop=SLOPS,sample=SAMPLES,cnv_type=TYPES),
-		expand('work/Reciprocal/Results/savvy_x_gatk.{cnv_type}.reciprocal.filtered.bed',cnv_type=TYPES),
-		expand('work/Reciprocal/Results/savvy_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',cnv_type=TYPES),
-		expand('work/Reciprocal/Results/gatk_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',cnv_type=TYPES),
-		#expand('work/ReciprocalTriple/{sample}.savvy_x_gatk_cnvkit.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
-		#expand('work/Results/triple_reciprocal_overlap.{cnv_type}.filtered.bed',cnv_type=TYPES),
-		#expand('work/Results/multiinter.{cnv_type}.filtered.bed',cnv_type=TYPES),
-		#expand('work/Results/multiinter.{cnv_type}.filtered.3_matches_count',cnv_type=TYPES),
-		expand('work/ThreeWay/{sample}.3way.{cnv_type}.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
-		expand('work/ThreeWayBreakpoint/{sample}.3way.{cnv_type}.filtered.bedpe',sample=SAMPLES,cnv_type=TYPES),
-		'work/ven_diagram_counts.txt',
+                #expand('work/Reciprocal/{sample}.savvy_x_gatk.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
+                #expand('work/Reciprocal/{sample}.savvy_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
+                #expand('work/Reciprocal/{sample}.gatk_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
+		##expand('work/BEDPE/{sample}.{caller}.{cnv_type}.filtered.bedpe',sample=SAMPLES,caller=CALLERS,cnv_type=TYPES),
+		##expand('work/BreakPoint/{sample}.savvy_x_gatk.{cnv_type}.breakpoint.filtered.bedpe',sample=SAMPLES,caller=CALLERS,cnv_type=TYPES),
+		##expand('work/BreakPoint/{sample}.savvy_x_cnvkit.{cnv_type}.breakpoint.filtered.bedpe',sample=SAMPLES,caller=CALLERS,cnv_type=TYPES),
+		##expand('work/BreakPoint/{sample}.gatk_x_cnvkit.{cnv_type}.breakpoint.filtered.bedpe',sample=SAMPLES,caller=CALLERS,cnv_type=TYPES),
+		##expand('work/BreakPoint/{slop}/{sample}.savvy_x_gatk.{cnv_type}.breakpoint.filtered.bedpe',slop=SLOPS,sample=SAMPLES,cnv_type=TYPES),
+		##expand('work/BreakPoint/{slop}/{sample}.savvy_x_cnvkit.{cnv_type}.breakpoint.filtered.bedpe',slop=SLOPS,sample=SAMPLES,cnv_type=TYPES),
+		##expand('work/BreakPoint/{slop}/{sample}.gatk_x_cnvkit.{cnv_type}.breakpoint.filtered.bedpe',slop=SLOPS,sample=SAMPLES,cnv_type=TYPES),
+		##expand('work/Reciprocal/Results/savvy_x_gatk.{cnv_type}.reciprocal.filtered.bed',cnv_type=TYPES),
+		##expand('work/Reciprocal/Results/savvy_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',cnv_type=TYPES),
+		##expand('work/Reciprocal/Results/gatk_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',cnv_type=TYPES),
+		##expand('work/ReciprocalTriple/{sample}.savvy_x_gatk_cnvkit.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
+		##expand('work/Results/triple_reciprocal_overlap.{cnv_type}.filtered.bed',cnv_type=TYPES),
+		##expand('work/Results/multiinter.{cnv_type}.filtered.bed',cnv_type=TYPES),
+		##expand('work/Results/multiinter.{cnv_type}.filtered.3_matches_count',cnv_type=TYPES),
+		#expand('work/ThreeWay/{sample}.3way.{cnv_type}.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
+		#expand('work/ThreeWayBreakpoint/{sample}.3way.{cnv_type}.filtered.bedpe',sample=SAMPLES,cnv_type=TYPES),
+		#'work/ven_diagram_counts.txt',
 		#'work/size_check_report.txt',
-		expand('work/out_of_sample_overlaps.{cnv_type}.bed',cnv_type=TYPES),
-		expand('work/GeneOverlap/{caller}.{cnv_type}.filtered.bed',caller=CALLERS,cnv_type=TYPES)
+		#expand('work/out_of_sample_overlaps.{cnv_type}.bed',cnv_type=TYPES),
+		#expand('work/GeneOverlap/{caller}.{cnv_type}.filtered.bed',caller=CALLERS,cnv_type=TYPES),
+		expand('work/TrimmedToExonEnds/sample.{sample}.{caller}.{cnv_type}.filtered.bed',sample=SAMPLES,caller=CALLERS,cnv_type=TYPES),
+		expand('work/TrimmedThreeWay/sample.{sample}.3way.{cnv_type}.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
+		expand('work/TrimmedReciprocal/sample.{sample}.savvy_x_gatk.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
+		expand('work/TrimmedReciprocal/sample.{sample}.savvy_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
+		expand('work/TrimmedReciprocal/sample.{sample}.gatk_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type=TYPES),
+		expand('work/TrimmedReciprocal/sample.savvy_x_gatk.{cnv_type}.reciprocal.filtered.bed',cnv_type=TYPES),
+		expand('work/TrimmedReciprocal/sample.savvy_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',cnv_type=TYPES),
+		expand('work/TrimmedReciprocal/sample.gatk_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',cnv_type=TYPES)
 
 rule split_del_dup:
 	input:
@@ -67,6 +75,35 @@ rule filter_calls_by_size:
 	shell:
 		"""
 		awk '{{if($3-$2 >= 1000) print}}' {input} > {output}
+		"""
+
+rule trim_call_ends:
+	input:
+		calls='work/{caller}.{cnv_type}.filtered.bed',
+		probes='SureSelect_All_Exon_V2.sorted.bed.gz'
+	output:
+		calls='work/TrimmedToExonEnds/trimmedi.{caller}.{cnv_type}.filtered.bed',
+		outfile='trimmed.{caller}.{cnv_type}.out.txt'
+	shell:
+		"""
+		mkdir -p work/TrimmedToExonEnds
+		python adjust_start_end.py {input.probes} {input.calls} {output.calls} > {output.outfile}
+		"""
+
+rule split_trimmed:
+	input:
+		'work/TrimmedToExonEnds/trimmedi.{caller}.{cnv_type}.filtered.bed',
+	output:
+		expand('work/TrimmedToExonEnds/sample.{sample}.{caller}.{cnv_type}.filtered.bed',sample=SAMPLES,caller='{caller}',cnv_type='{cnv_type}')
+	params:
+		samples = SAMPLES
+	shell:
+		"""
+		array=({params.samples})
+		for i in "${{array[@]}}"
+		do
+			{{ grep $i {input} > work/TrimmedToExonEnds/sample."$i".{wildcards.caller}.{wildcards.cnv_type}.filtered.bed || true; }}
+		done
 		"""
 
 rule split_samps:
@@ -100,6 +137,23 @@ rule recip_per_sample:
 		bedtools intersect -a {input.savvy}  -b {input.gatk}  -r -f .5 > work/Reciprocal/{wildcards.sample}.savvy_x_gatk.{wildcards.cnv_type}.reciprocal.filtered.bed
 		bedtools intersect -a {input.savvy}  -b {input.cnvkit}  -r -f .5 > work/Reciprocal/{wildcards.sample}.savvy_x_cnvkit.{wildcards.cnv_type}.reciprocal.filtered.bed
 		bedtools intersect -a {input.gatk}  -b {input.cnvkit}  -r -f .5 > work/Reciprocal/{wildcards.sample}.gatk_x_cnvkit.{wildcards.cnv_type}.reciprocal.filtered.bed
+		"""
+
+rule recip_per_sample_trimmed:
+	input:
+		savvy='work/TrimmedToExonEnds/sample.{sample}.savvy.{cnv_type}.filtered.bed',
+		gatk='work/TrimmedToExonEnds/sample.{sample}.gatk.{cnv_type}.filtered.bed',
+		cnvkit='work/TrimmedToExonEnds/sample.{sample}.cnvkit.{cnv_type}.filtered.bed'
+	output:
+		'work/TrimmedReciprocal/sample.{sample}.savvy_x_gatk.{cnv_type}.reciprocal.filtered.bed',
+		'work/TrimmedReciprocal/sample.{sample}.savvy_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',
+		'work/TrimmedReciprocal/sample.{sample}.gatk_x_cnvkit.{cnv_type}.reciprocal.filtered.bed'
+	shell:
+		"""
+		mkdir -p work/TrimmedReciprocal
+		bedtools intersect -a {input.savvy}  -b {input.gatk}  -r -f .5 > work/TrimmedReciprocal/sample.{wildcards.sample}.savvy_x_gatk.{wildcards.cnv_type}.reciprocal.filtered.bed
+		bedtools intersect -a {input.savvy}  -b {input.cnvkit}  -r -f .5 > work/TrimmedReciprocal/sample.{wildcards.sample}.savvy_x_cnvkit.{wildcards.cnv_type}.reciprocal.filtered.bed
+		bedtools intersect -a {input.gatk}  -b {input.cnvkit}  -r -f .5 > work/TrimmedReciprocal/sample.{wildcards.sample}.gatk_x_cnvkit.{wildcards.cnv_type}.reciprocal.filtered.bed
 		"""
 
 rule make_bedpe:
@@ -153,6 +207,23 @@ rule agg_reciprocal:
 		cat {input.sg} > work/Reciprocal/Results/savvy_x_gatk.{wildcards.cnv_type}.reciprocal.filtered.bed
 		cat {input.sc} > work/Reciprocal/Results/savvy_x_cnvkit.{wildcards.cnv_type}.reciprocal.filtered.bed
 		cat {input.gc} > work/Reciprocal/Results/gatk_x_cnvkit.{wildcards.cnv_type}.reciprocal.filtered.bed
+		"""
+
+rule agg_reciprocal_trimmed:
+	input:
+		sg=expand('work/TrimmedReciprocal/sample.{sample}.savvy_x_gatk.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type='{cnv_type}'),
+		sc=expand('work/TrimmedReciprocal/sample.{sample}.savvy_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type='{cnv_type}'),
+		gc=expand('work/TrimmedReciprocal/sample.{sample}.gatk_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',sample=SAMPLES,cnv_type='{cnv_type}')
+	output:
+		'work/TrimmedReciprocal/sample.savvy_x_gatk.{cnv_type}.reciprocal.filtered.bed',
+		'work/TrimmedReciprocal/sample.savvy_x_cnvkit.{cnv_type}.reciprocal.filtered.bed',
+		'work/TrimmedReciprocal/sample.gatk_x_cnvkit.{cnv_type}.reciprocal.filtered.bed'
+	shell:
+		"""
+		mkdir -p work/TrimmedReciprocal/
+		cat {input.sg} > work/TrimmedReciprocal/sample.savvy_x_gatk.{wildcards.cnv_type}.reciprocal.filtered.bed
+		cat {input.sc} > work/TrimmedReciprocal/sample.savvy_x_cnvkit.{wildcards.cnv_type}.reciprocal.filtered.bed
+		cat {input.gc} > work/TrimmedReciprocal/sample.gatk_x_cnvkit.{wildcards.cnv_type}.reciprocal.filtered.bed
 		"""
 
 rule triple_recip:
@@ -231,6 +302,20 @@ rule three_way:
 		python recip_and_buffer.py {input.savvy} {input.gatk} {input.cnvkit} 5000 {output.both_3way} {output.both_2way}
 		"""
 
+rule trimmed_3way:
+	input:
+		savvy='work/TrimmedToExonEnds/sample.{sample}.savvy.{cnv_type}.filtered.bed',
+		gatk='work/TrimmedToExonEnds/sample.{sample}.gatk.{cnv_type}.filtered.bed',
+		cnvkit='work/TrimmedToExonEnds/sample.{sample}.cnvkit.{cnv_type}.filtered.bed'
+	output:
+		recip_out='work/TrimmedThreeWay/sample.{sample}.3way.{cnv_type}.filtered.bed'
+	threads:4
+	shell:
+		"""
+		mkdir -p  work/TrimmedThreeWay
+		python triple_reciprocal_ol.py {input.savvy} {input.gatk} {input.cnvkit} {output.recip_out}	
+		"""
+
 rule overlap_out_of_sample:
 	input:
 		savvy=expand('work/{sample}.savvy.{cnv_type}.filtered.bed',sample=SAMPLES,cnv_type='{cnv_type}'),
@@ -243,7 +328,7 @@ rule overlap_out_of_sample:
 		cat {input.gatk} > tmp.all.{wildcards.cnv_type}.filtered.bed
 		cat {input.savvy} >> tmp.all.{wildcards.cnv_type}.filtered.bed
 		cat {input.cnvkit} >> tmp.all.{wildcards.cnv_type}.filtered.bed
-		python out_of_sample_overlap.py tmp.all.filtered.bed 5000 {output}
+		python out_of_sample_overlap.py tmp.all.{wildcards.cnv_type}.filtered.bed 5000 {output}
 		"""
 
 rule ven_diagram_counts:
