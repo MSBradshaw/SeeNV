@@ -28,10 +28,8 @@ REF_SAMPLES = list(ref_samples_df['s_id'])
 	
 num_calls = 0
 for line in open(config['all_calls'],'r'):
-	f = line.strip()
-	for line in open(f,'r'):
-		if sum( s in line for s in SAMPLES) > 0:
-			num_calls += 1
+	if sum( s in line for s in SAMPLES) > 0:
+		num_calls += 1
 NUM_CALLS = [str(x) for x in range(num_calls)]
 
 
@@ -341,19 +339,19 @@ rule prep_all_calls:
 		"""
 		mkdir -p workproband/FindMaxTMP
 		rm -f workproband/FindMaxTMP/*
-		while read p; do
-			name=$(basename $p)
-			array=( {params.samples} )
-			for i in "${{array[@]}}"
-			do
-				cat $p | {{ grep $i || :; }} >> workproband/FindMaxTMP/$name.filtered 2>> {log}
-			done
+		
+		name=$(basename {input.all_calls})
+		array=( {params.samples} )
+		for i in "${{array[@]}}"
+		do
+			cat $p | {{ grep $i || :; }} >> workproband/FindMaxTMP/$name.filtered 2>> {log}
+		done
 
-			bedtools sort -i workproband/FindMaxTMP/$name.filtered > workproband/FindMaxTMP/$name.sorted 2>> {log}
-			bgzip -f workproband/FindMaxTMP/$name.sorted 2>> {log}
-			tabix -f -p bed workproband/FindMaxTMP/$name.sorted.gz 2>> {log}
-			echo "workproband/FindMaxTMP/${{name}}.sorted.gz" >> workproband/FindMaxTMP/multiple_savvy_calls.txt 2>> {log}
-		done <{input.all_calls}
+		bedtools sort -i workproband/FindMaxTMP/$name.filtered > workproband/FindMaxTMP/$name.sorted 2>> {log}
+		bgzip -f workproband/FindMaxTMP/$name.sorted 2>> {log}
+		tabix -f -p bed workproband/FindMaxTMP/$name.sorted.gz 2>> {log}
+		echo "workproband/FindMaxTMP/${{name}}.sorted.gz" >> workproband/FindMaxTMP/multiple_savvy_calls.txt 2>> {log}
+		
 		touch workproband/FindMaxTMP/.ready
 		"""
 rule plotter:

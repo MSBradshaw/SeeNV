@@ -159,9 +159,7 @@ rule create_panel_db:
 		cp {input.rpm_gz} {output}/RPM
 		cp {input.rpm_tbi} {output}/RPM
 		cp {input.z_bedgz} {output}/AdjZscore
-		cp {input.z_tbi} {output}/AdjZscore
-		while read p; do
-			cp "$p" {output}/Calls
-		done <{input.all_calls}
+		cp {input.z_tbi} {output}/AdjZscore	
+		cp {input.all_calls} {output}/Calls
 		cp {input.sample_list} {output}
 		"""
