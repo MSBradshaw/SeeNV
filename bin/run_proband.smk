@@ -88,9 +88,10 @@ rule count_reads:
         log:
                 "workproband/logs/count_reads.{sample}.log"
         shell:
-                """
-		samtools view -c -F 260 {input} > {output}
-                """
+            """
+			mkdir -p workproband/ReadCounts
+			samtools view -c -F 260 {input} > {output}
+            """
 
 rule get_total_read_counts:
 #	"""
@@ -102,6 +103,7 @@ rule get_total_read_counts:
 		"workproband/TotalReads/total_read.txt"
 	shell:
 		"""
+		mkdir -p workproband/TotalReads
 		cat {input} > workproband/TotalReads/total_read.txt
 		"""
 
@@ -135,6 +137,7 @@ rule get_probe_reads_per_million:
 		"workproband/RPM/{sample}.probe.rpm_rate.bed.gz.tbi"
 	shell:
 		"""
+		mkdir -p workproband/RPM/
 		get_rpm_rates.py \
 		-m {input.per_base_bed_gz} \
 		--regions_file {input.probes_gz} \
@@ -228,6 +231,7 @@ rule label_exons:
 		"workproband/Exons/labeled_exons.bed.gz.tbi"
 	shell:
 		"""
+		mkdir -p workproband/Exons/
 		zcat {input} | label_exon_number.py > workproband/Exons/labeled_exons.bed
 		bgzip workproband/Exons/labeled_exons.bed
 		tabix -p bed workproband/Exons/labeled_exons.bed.gz
@@ -250,6 +254,7 @@ rule link_ref_panel_rpm:
 	shell:
 		"""
 		mkdir -p workproband/ProbeCoverageRefPanel/
+		mkdir -p workproband/AdjZscoreRefPanel/
 		cp {input.bedgz} workproband/ProbeCoverageRefPanel/
 		cp {input.tbi} workproband/ProbeCoverageRefPanel/
 		cp {input.adj_bed} workproband/AdjZscoreRefPanel/
@@ -272,6 +277,7 @@ rule get_probe_cover_mean_std:
 	threads: 2
 	shell:
 		"""
+		mkdir -p workproband/ProbeCoverage/
 		get_regions_zscores.py -r workproband/ProbeCoverageRefPanel/ -s {input.proband_rpm} | bgzip -c > {output.bedgz}
 		cp {output.bedgz} workproband/ProbeCoverage/{wildcards.sample}_probe.cover.mean.stdev.copy.bed.gz
 		gunzip workproband/ProbeCoverage/{wildcards.sample}_probe.cover.mean.stdev.copy.bed.gz
@@ -293,12 +299,12 @@ rule get_adj_zscore:
 		tbi="workproband/AdjZscore/{sample}.adj_z.bed.gz.tbi"
 	shell:
 		"""
+		mkdir -p workproband/AdjZscore/
 		get_coverage_zscores.py \
 			-r {input.proband_rpm} \
 			-s {input.proband_coverage} \
 			| bgzip -c > {output.bedgz}
-		tabix -p bed {output.bedgz}
-			
+		tabix -p bed {output.bedgz}	
 		"""
 
 rule merge_adj_scores:
@@ -373,6 +379,7 @@ rule plotter:
 		num_calls=len(NUM_CALLS)
 	shell:
 		"""
+		mkdir -p workproband/PlotsComplete/
 		inputs=""
 		empty=""
 		while read p; do

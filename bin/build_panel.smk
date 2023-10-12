@@ -28,14 +28,6 @@ rule all:
                 expand("workpanel/RPM/{sample}.probe.rpm_rate.bed.gz.tbi", sample=SAMPLES),
 		config['outputdir']
 
-#rule process_input_file:
-#	input:
-#		"panel.samples"
-#	output:
-#		directory(".workpanel/")
-#	shell:
-#		'mkdir .workpanel; cat {input} | gargs --sep="\t" "ln -s {{3}} .workpanel/{{0}}.bam"'
-
 rule mosdepth:
 	input:
 		"workpanel/{sample}.bam"
@@ -59,9 +51,10 @@ rule count_reads:
         log:
                 "logs/mosdepth.{sample}.log"
         shell:
-                """
-		samtools view -c -F 260 {input} > {output}
-                """
+			"""
+			mkdir -p workpanel/ReadCounts
+			samtools view -c -F 260 {input} > {output}
+			"""
 
 rule get_total_read_counts:
 	input:
@@ -70,6 +63,7 @@ rule get_total_read_counts:
 		"workpanel/TotalReads/total_read.txt"
 	shell:
 		"""
+		mkdir -p workpanel/TotalReads
 		cat {input} > workpanel/TotalReads/total_read.txt
 		"""
 
@@ -97,6 +91,7 @@ rule get_probe_reads_per_million:
 		"workpanel/RPM/{sample}.probe.rpm_rate.bed.gz.tbi"
 	shell:
 		"""
+		mkdir -p workpanel/RPM
 		get_rpm_rates.py \
 		-m {input.per_base_bed_gz} \
 		--regions_file {input.probes_gz} \
