@@ -22,7 +22,7 @@ chmod 770 gargs_linux
 mv gargs_linux $CONDA_PREFIX/bin/gargs
 
 cp bin/seenv.py $CONDA_PREFIX/bin/seenv
-cp bin/build_panel.snake $CONDA_PREFIX/bin/build_panel.snake
-cp bin/run_proband.snake $CONDA_PREFIX/bin/run_proband.snake
+cp bin/build_panel.smk $CONDA_PREFIX/bin/build_panel.smk
+cp bin/run_proband.smk $CONDA_PREFIX/bin/run_proband.smk
 cp panel_config.json $CONDA_PREFIX/bin/panel_config.json
 cp proband_config.json $CONDA_PREFIX/bin/proband_config.json

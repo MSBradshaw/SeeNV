@@ -44,17 +44,17 @@ rule mosdepth:
 		"""
 
 rule count_reads:
-        input:
-                "workpanel/{sample}.bam"
-        output:
-                "workpanel/ReadCounts/{sample}.num_reads.txt"
-        log:
-                "logs/mosdepth.{sample}.log"
-        shell:
-			"""
-			mkdir -p workpanel/ReadCounts
-			samtools view -c -F 260 {input} > {output}
-			"""
+	input:
+		"workpanel/{sample}.bam"
+	output:
+		"workpanel/ReadCounts/{sample}.num_reads.txt"
+	log:
+		"logs/mosdepth.{sample}.log"
+	shell:
+		"""
+		mkdir -p workpanel/ReadCounts
+		samtools view -c -F 260 {input} > {output}
+		"""
 
 rule get_total_read_counts:
 	input:
