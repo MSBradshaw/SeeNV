@@ -1,0 +1,25 @@
+mkdir -p Bams
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bam" s3://1000genomes/phase3/data/HG00133/exome_alignment/ Bams/ ; mv Bams/HG00133*.bam Bams/HG00133.bam
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bai" s3://1000genomes/phase3/data/HG00133/exome_alignment/ Bams/ ; mv Bams/HG00133*.bai Bams/HG00133.bai 
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bam" s3://1000genomes/phase3/data/HG01438/exome_alignment/ Bams/ ; mv Bams/HG01438*.bam Bams/HG01438.bam
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bai" s3://1000genomes/phase3/data/HG01438/exome_alignment/ Bams/ ; mv Bams/HG01438*.bai Bams/HG01438.bai 
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bam" s3://1000genomes/phase3/data/HG02573/exome_alignment/ Bams/ ; mv Bams/HG02573*.bam Bams/HG02573.bam
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bai" s3://1000genomes/phase3/data/HG02573/exome_alignment/ Bams/ ; mv Bams/HG02573*.bai Bams/HG02573.bai 
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bam" s3://1000genomes/phase3/data/NA07347/exome_alignment/ Bams/ ; mv Bams/NA07347*.bam Bams/NA07347.bam
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bai" s3://1000genomes/phase3/data/NA07347/exome_alignment/ Bams/ ; mv Bams/NA07347*.bai Bams/NA07347.bai 
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bam" s3://1000genomes/phase3/data/NA18510/exome_alignment/ Bams/ ; mv Bams/NA18510*.bam Bams/NA18510.bam
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bai" s3://1000genomes/phase3/data/NA18510/exome_alignment/ Bams/ ; mv Bams/NA18510*.bai Bams/NA18510.bai 
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bam" s3://1000genomes/phase3/data/NA19346/exome_alignment/ Bams/ ; mv Bams/NA19346*.bam Bams/NA19346.bam
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bai" s3://1000genomes/phase3/data/NA19346/exome_alignment/ Bams/ ; mv Bams/NA19346*.bai Bams/NA19346.bai 
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bam" s3://1000genomes/phase3/data/NA19347/exome_alignment/ Bams/ ; mv Bams/NA19347*.bam Bams/NA19347.bam
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bai" s3://1000genomes/phase3/data/NA19347/exome_alignment/ Bams/ ; mv Bams/NA19347*.bai Bams/NA19347.bai 
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bam" s3://1000genomes/phase3/data/NA19663/exome_alignment/ Bams/ ; mv Bams/NA19663*.bam Bams/NA19663.bam
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bai" s3://1000genomes/phase3/data/NA19663/exome_alignment/ Bams/ ; mv Bams/NA19663*.bai Bams/NA19663.bai 
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bam" s3://1000genomes/phase3/data/NA19707/exome_alignment/ Bams/ ; mv Bams/NA19707*.bam Bams/NA19707.bam
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bai" s3://1000genomes/phase3/data/NA19707/exome_alignment/ Bams/ ; mv Bams/NA19707*.bai Bams/NA19707.bai 
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bam" s3://1000genomes/phase3/data/NA19712/exome_alignment/ Bams/ ; mv Bams/NA19712*.bam Bams/NA19712.bam
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bai" s3://1000genomes/phase3/data/NA19712/exome_alignment/ Bams/ ; mv Bams/NA19712*.bai Bams/NA19712.bai 
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bam" s3://1000genomes/phase3/data/NA19834/exome_alignment/ Bams/ ; mv Bams/NA19834*.bam Bams/NA19834.bam
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bai" s3://1000genomes/phase3/data/NA19834/exome_alignment/ Bams/ ; mv Bams/NA19834*.bai Bams/NA19834.bai 
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bam" s3://1000genomes/phase3/data/NA20770/exome_alignment/ Bams/ ; mv Bams/NA20770*.bam Bams/NA20770.bam
+aws s3 cp  --no-sign-request --recursive --exclude "*" --include "*.mapped*.bai" s3://1000genomes/phase3/data/NA20770/exome_alignment/ Bams/ ; mv Bams/NA20770*.bai Bams/NA20770.bai 
