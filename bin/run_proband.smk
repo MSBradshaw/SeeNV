@@ -160,9 +160,7 @@ rule create_plotting_params:
 	shell:
 		"""
 		mkdir -p workproband/Params/
-		while read p; do
-			cat $p | awk -v VAR=$p '{{ print $1":"$2"-"$3"\t"$4"\t"$5"\t"VAR"\t"$1"."$2"-"$3"\t"$4}}' >> workproband/Params/tmp_call_plotting_params.txt
-		done <{input.all_calls}
+		cat {input.all_calls} | awk '{{ print $1":"$2"-"$3"\t"$4"\t"$5"\t.\t"$1"."$2"-"$3"\t"$4}}' >> workproband/Params/tmp_call_plotting_params.txt
 		
 		for i in {{1..23}}; do
 			grep "^$i" workproband/Params/tmp_call_plotting_params.txt >> workproband/Params/call_plotting_params.txt.tmp || echo "Not found" 2>> {log}
@@ -344,7 +342,7 @@ rule prep_all_calls:
 		array=( {params.samples} )
 		for i in "${{array[@]}}"
 		do
-			cat $p | {{ grep $i || :; }} >> workproband/FindMaxTMP/$name.filtered 2>> {log}
+			cat {input.all_calls} | {{ grep $i || :; }} >> workproband/FindMaxTMP/$name.filtered 2>> {log}
 		done
 
 		bedtools sort -i workproband/FindMaxTMP/$name.filtered > workproband/FindMaxTMP/$name.sorted 2>> {log}
