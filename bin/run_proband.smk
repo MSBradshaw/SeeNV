@@ -352,6 +352,7 @@ rule prep_all_calls:
 		
 		touch workproband/FindMaxTMP/.ready
 		"""
+
 rule plotter:
 	input:
 		probes="workproband/Probes/probes.sorted.bed.gz",
@@ -399,7 +400,7 @@ rule plotter:
 		regionclean=$(cut -d" " -f5 <<< $string) 2>> {log}
 		svtype2=$(cut -d" " -f6 <<< $string) 2>> {log}
 
-		new_plotter.py \
+		plotter.py \
 			-i $inputs \
 			-s ${{samplename%.*}} \
 			--output workproband/Plots/"${{sample}}.${{region}}.${{svtype}}".png \
@@ -414,7 +415,6 @@ rule plotter:
 			--repeatmasker {input.repeat_masker}
 		touch {output}
 		"""
-
 
 rule collect_allele_counts:
 	input:
