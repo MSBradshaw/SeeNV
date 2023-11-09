@@ -45,6 +45,7 @@ def get_args():
             -t THREADS         (optional) number of threads to use, default 1 (you really want to use more than 1)
             -v varDB           (required) path to a GZipped bed file for the varDB common variants with an accompanying tabix indexed
             -m RepeatMasker    (required) path to a GZipped bed file for the RepeatMasker elements with an accompanying tabix indexed
+            -q Site Quality    (optional) index of the column in the sites file that contains the site quality score, default None
 
         Parameters to accompany --buildref, -b
             -i INPUT_SAMPLES  (required) samples list
@@ -91,6 +92,7 @@ def get_plot_args():
     parser.add_argument('-t',dest='threads',help='number of threads to use, default 1 (you really want to use more than 1)',default="1",required=False)
     parser.add_argument('-v',dest='vardb',help='path to bed file containing varDB common variants',required=True)
     parser.add_argument('-m',dest='repeat_masker',help='path to bed file containing repeatMasker',required=True)
+    parser.add_argument('-q',dest='site_quality',help='index of the column in the sites file that contains the site quality score, default -1 to ignore this parameter',default=-1,required=False)
     return parser.parse_args()
 
 def get_build_args():
@@ -152,7 +154,7 @@ if run_type == 'plotsamples':
     echo $refpanel > workproband/reference_panel.txt
     
     # start the snakemake pipeline now they input files are in there proper locations
-    snakemake -c $threads -s $conda_bin/run_proband.smk --configfile $conda_bin/proband_config.json --printshellcmds --rerun-incomplete --restart-times 3
+    snakemake -c $threads -s $conda_bin/run_proband.smk --configfile $conda_bin/proband_config.json --printshellcmds --rerun-incomplete --restart-times 3 --config site_quality={site_quality}
     """
     command = command.format(samples=args.input_samples,
                     probes=args.sites,
@@ -162,6 +164,7 @@ if run_type == 'plotsamples':
                     af=args.gnomad,
                     threads=args.threads,
 		    repeat_masker=args.repeat_masker,
+            site_quality=args.site_quality,
 		    vardb=args.vardb)
 
 elif run_type == 'buildref':
@@ -201,4 +204,5 @@ else:
     print('Internal Error, unexpected run_type')
     exit(1)
 
+print(command)
 os.system(command)

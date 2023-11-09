@@ -373,7 +373,8 @@ rule plotter:
 	log:
 		"workproband/logs/plotting_{num}.log"
 	params:
-		num_calls=len(NUM_CALLS)
+		num_calls=len(NUM_CALLS),
+		site_quality=config['site_quality']
 	shell:
 		"""
 		mkdir -p workproband/PlotsComplete/
@@ -412,7 +413,8 @@ rule plotter:
 			--depth workproband/ProbeCoverage/${{sample}}_probe.cover.mean.stdev.bed \
 			--gnomad {input.gnomad_sv} \
 			--vardb {input.vardb} \
-			--repeatmasker {input.repeat_masker}
+			--repeatmasker {input.repeat_masker} \
+			--site_quality {params.site_quality}
 		touch {output}
 		"""
 
