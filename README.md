@@ -1,4 +1,4 @@
-<p align="center"><img src="https://github.com/MSBradshaw/SeeNV/blob/main/Imgs/seenv.png?raw=true" width="80%"/></p>
+<p align="center"><img src="https://github.com/MSBradshaw/SeeNV/blob/main/Imgs/SeeNVLogo.png?raw=true" width="80%"/></p>
 
 <p align="center"><img src="https://github.com/MSBradshaw/SeeNV/blob/main/Imgs/dup.png?raw=true" width="80%"/></p>
 
