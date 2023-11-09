@@ -3,6 +3,29 @@ import argparse
 import sys
 import os
 
+def check_sample_list_format(filename):
+    with open(filename,'r') as f:
+        for line in f:
+            if line[0] == '#':
+                continue
+            row = line.strip().split('\t')
+            if len(row) != 5:
+                print('SeeNV Error: samples list must have 5 columns')
+                exit(1)
+            if not os.path.exists(row[3]):
+                print('SeeNV Error: sample file does not exist: {}'.format(row[3]))
+                exit(1)
+            if not os.path.exists(row[4]):
+                print('SeeNV Error: sample index file does not exist: {}'.format(row[4]))
+                exit(1)
+            # ensure the suffix for 3 is .bam and 4 is .bai
+            if row[3][-4:] != '.bam':
+                print('SeeNV Error: sample file must have suffix .bam: {}'.format(row[3]))
+                exit(1)
+            if row[4][-4:] != '.bai':
+                print('SeeNV Error: sample index file must have suffix .bai: {}'.format(row[4]))
+                exit(1)
+
 def get_args():
     help_message ="""
         SeeNV usage:
@@ -86,6 +109,9 @@ def get_build_args():
     return parser.parse_args()
 
 run_type, args = get_args()
+
+check_sample_list_format(args.input_samples)
+
 if run_type == 'plotsamples':
     command="""
     conda_loc=$(which python)
