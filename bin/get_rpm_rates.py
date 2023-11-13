@@ -4,6 +4,7 @@ import gzip
 import argparse
 from pysam import TabixFile
 import numpy as np
+import warnings
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -57,7 +58,12 @@ def main():
     rates = []
     tbx = TabixFile(args.mosdepth_file)
     for region in regions:
-        I = utils.get_intervals_in_region(region, args.mosdepth_file, tbx=tbx)
+        try:
+            I = utils.get_intervals_in_region(region, args.mosdepth_file, tbx=tbx)
+        except ValueError as e:
+            warnings.warn('Warning, adding np.nan as rate for this region:'+str(e))
+            rates.append(np.nan)
+            continue
         total_depth = 0
         for i in I:
             total_depth += int(i.data[0])

@@ -141,9 +141,9 @@ def get_build_args():
 run_type, args = get_args()
 
 check_sample_list_format(args.input_samples)
-assert_probe_sets_are_same(args.ref_db,args.sites)
 
 if run_type == 'plotsamples':
+    assert_probe_sets_are_same(args.ref_db,args.sites)
     command="""
     conda_loc=$(which python)
     conda_bin=$(dirname $conda_loc)
