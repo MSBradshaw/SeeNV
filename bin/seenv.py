@@ -2,6 +2,7 @@
 import argparse
 import sys
 import os
+import gzip
 
 def check_sample_list_format(filename):
     with open(filename,'r') as f:
@@ -25,6 +26,33 @@ def check_sample_list_format(filename):
             if row[4][-4:] != '.bai':
                 print('SeeNV Error: sample index file must have suffix .bai: {}'.format(row[4]))
                 exit(1)
+
+def assert_probe_sets_are_same(ref_db,probes):
+    # get the first bed.gz file in ReferenceDB/AdjZscore/
+    bgz = None
+    for f in os.listdir(ref_db+'/AdjZscore/'):
+        if '.bed.gz' in f and 'tbi' not in f:
+            bgz = f
+            break
+    
+    # read lines in bgz, get a list of all probes
+    ref_probes = set()
+    with gzip.open(ref_db+'/AdjZscore/'+bgz,'rt') as f:
+        for l in f:
+            row = l.strip().split('\t')
+            ref_probes.add('\t'.join(row[0:3]))
+    # get the probes in the probes file
+    proband_probes = set()
+    with open(probes,'r') as f:
+        for l in f:
+            row = l.strip().split('\t')
+            proband_probes.add('\t'.join(row[0:3]))
+    # compare the two sets
+    if len(ref_probes) != len(proband_probes):
+        print('SeeNV Error: the number of probes in the proband probes file and the reference database probes file are not the same. They are likely not the same set of probes.')
+        exit(1)
+
+            
 
 def get_args():
     help_message ="""
@@ -113,6 +141,7 @@ def get_build_args():
 run_type, args = get_args()
 
 check_sample_list_format(args.input_samples)
+assert_probe_sets_are_same(args.ref_db,args.sites)
 
 if run_type == 'plotsamples':
     command="""
