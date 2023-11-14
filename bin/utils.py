@@ -13,7 +13,7 @@ def get_gene_cord_map(gene_bed):
 
     f =  gzip.open(gene_bed, 'rb')
     for l in f:
-        A = l.rstrip().split()
+        A = l.rstrip().split('\t')
         cord = Interval(chrom=A[0].decode('UTF-8'),
                         start=int(A[1]),
                         end=int(A[2]),
@@ -38,7 +38,7 @@ def get_intervals_in_region(target_interval, bed_file, tbx=None, ignore=None):
                          target_interval.start,
                          target_interval.end):
         if ignore is not None and ignore in row: continue
-        A = row.rstrip().split()
+        A = row.rstrip().split('\t')
         cord = Interval(chrom=A[0],
                         start=int(A[1]),
                         end=int(A[2]),
