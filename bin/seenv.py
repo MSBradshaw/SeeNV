@@ -233,5 +233,4 @@ else:
     print('Internal Error, unexpected run_type')
     exit(1)
 
-print(command)
 os.system(command)
