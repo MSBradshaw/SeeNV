@@ -260,7 +260,9 @@ def mark_calls(_ax: plt.Axes, _ax_legend: plt.Axes, _calls: typing.List[utils.In
     _ax.set_xlim(_x_range)
     # add some extra space to the top of the plot for arrows are not cut off
     _lim = _ax.get_ylim()
-    _ax.set_ylim(_lim[0] - 1, _lim[1] + 1)
+    # add extra spacing to the top so overlapping calls are not cut off, this should be proportional to the number of calls
+    extra_top_space = max(len(_calls), 2)
+    _ax.set_ylim(_lim[0] - 1, _lim[1] + extra_top_space)
     remove_borders(_ax)
     remove_ticks(_ax)
     _ax.set_title('Sample Calls', loc='left', fontsize=SUBPLOT_TITLE_SIZE)
@@ -315,7 +317,6 @@ def plot_sample_coverage_stats(_ax: plt.Axes, _region: utils.Interval, _scores_f
                 # if there are less than 4 lines in the sites file, that means there is definately not any probe quality information
                 # if site_quality is -1 ignore it
                 if len(ss(_line)) < 4 or _site_quality == -1:
-                    print('Skipping because it said too')
                     continue
                 _colors.append(ss(_line)[3])
                 if _colors[-1] not in _color_legend:
@@ -483,7 +484,9 @@ def plot_other_samples_calls(_ax: plt.Axes, _ax_legend: plt.Axes, _region: utils
     _ax.set_xlim(_x_range)
     # add some extra space to the top of the plot for arrows are not cut off
     _lim = _ax.get_ylim()
-    _ax.set_ylim(_lim[0] - 2, _lim[1] + 2)
+    # add extra spacing to the top so overlapping calls are not cut off, this should be proportional to the number of calls
+    extra_top_space = max(len(_calls), 2)
+    _ax.set_ylim(_lim[0] - 1, _lim[1] + extra_top_space)
     remove_borders(_ax)
     remove_ticks(_ax)
     _ax.set_title('Cohort Calls', loc='left', fontsize=SUBPLOT_TITLE_SIZE)
@@ -894,7 +897,9 @@ def plot_repeat_masker(_ax: plt.Axes, _ax_legend: plt.Axes, _file: str, _region:
 def probe_quality_heatmap(_ax: plt.Axes, _ax_legend: plt.Axes, _file: str, _region: utils.Interval,
                           _x_range: typing.Tuple, _site_quality: int = -1):
     if _site_quality == -1:
-        print('Skipping because it said too')
+        # hide the ax
+        _ax.set_visible(False)
+        _ax_legend.set_visible(False)
         return
     
     _probes_tabix = pysam.TabixFile(_file)
@@ -911,7 +916,6 @@ def probe_quality_heatmap(_ax: plt.Axes, _ax_legend: plt.Axes, _file: str, _regi
                 continue
             _qualities.append(ss(_line)[_site_quality])
         # if there is more than one there is probe information, else there is not and we need a filler value
-        print(_qualities)
         if len(_qualities) > 1:
             _portion_good = len([x for x in _qualities if 'good' == x.lower()]) / len(_qualities)
             _scores.append(_portion_good)
@@ -1042,6 +1046,7 @@ def main():
                                _sample_id=args.sample, _sites=args.sites,
                                _x_range=(target_window.start, target_window.end),
                                _non_sample_overlapping_calls=non_sample_overlapping_calls,_site_quality=args.site_quality)
+    
     mark_calls(samp_calls_ax, samp_calls_ax_legend, in_sample_calls, input_file_hatch_map,
                _x_range=(target_window.start, target_window.end), _current_call=target)
 
