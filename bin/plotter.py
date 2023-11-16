@@ -234,8 +234,6 @@ def mark_calls(_ax: plt.Axes, _ax_legend: plt.Axes, _calls: typing.List[utils.In
     _color_idx = 1
     for _i, _row in enumerate(_Y):
         for _j, _call in enumerate(_row):
-            # _ax.hlines(xmin=_call.start, xmax=_call.end, y=_i, color=_Y_info[_i][_j][_color_idx], linewidth=3,
-            #            alpha=_Y_info[_i][_j][_alpha_idx])
             _edge_type = DUP_linestyle
             if _Y_info[_i][_j][_alpha_idx] == DEL_ALPHA:
                 _edge_type = DEL_linestyle
@@ -519,7 +517,6 @@ def plot_gnomad(_ax: plt.Axes, _ax_legend: plt.Axes, _region: utils.Interval, _f
             continue
         _row = ss(_line)
         _regions.append(utils.Interval(chrom=_row[0], start=int(_row[1]), end=int(_row[2]), data=_row[3:]))
-        # _colors.append(DEFAULT_GREY)
         _hatches.append(None)
         _afs = [float(_x) for _x in _row[37].split(',')]
         _af = None
@@ -684,8 +681,6 @@ def plot_chr_mean_std(_ax_mean: plt.Axes, _ax_std: plt.Axes, _region: utils.Inte
     _ax_std.scatter(_xs, _stds, s=.1, color=DEFAULT_BLUE)
     _ax_mean.set_title('Mean Normalized Coverage', loc='left', fontsize=SUBPLOT_TITLE_SIZE)
     _ax_std.set_title('Std Normalized Coverage', loc='left', fontsize=SUBPLOT_TITLE_SIZE)
-    # _ax_std.set_ylabel('Std',size=SMALL_TEXT_SIZE)
-    # _ax_mean.set_ylabel('Mean',size=SMALL_TEXT_SIZE)
     _ax_std.tick_params(axis='both', which='both', labelsize=SMALL_TEXT_SIZE)
     _ax_mean.tick_params(axis='both', which='both', labelsize=SMALL_TEXT_SIZE)
     remove_borders(_ax_std)
