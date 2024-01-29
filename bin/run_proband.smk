@@ -37,18 +37,18 @@ rule all:
 	input:
 		expand("workproband/Mosdepth/{sample}.per-base.bed.gz", sample=SAMPLES),
 		"workproband/Probes/probes.sorted.bed.gz",
-                "workproband/Probes/probes.sorted.bed.gz.tbi",
+		"workproband/Probes/probes.sorted.bed.gz.tbi",
 		expand("workproband/ReadCounts/{sample}.num_reads.txt", sample=SAMPLES),
 		"workproband/TotalReads/total_read.txt",
 		expand("workproband/RPM/{sample}.probe.rpm_rate.bed.gz", sample=SAMPLES),
-                expand("workproband/RPM/{sample}.probe.rpm_rate.bed.gz.tbi", sample=SAMPLES),
+		expand("workproband/RPM/{sample}.probe.rpm_rate.bed.gz.tbi", sample=SAMPLES),
 		"workproband/Params/call_plotting_params.txt",
 		#"workproband/Exons/labeled_exons.bed.gz",
 		#"workproband/Exons/labeled_exons.bed.gz.tbi",
 		expand("workproband/ProbeCoverage/{sample}_probe.cover.mean.stdev.bed.gz", sample=SAMPLES),
 		expand("workproband/ProbeCoverage/{sample}_probe.cover.mean.stdev.bed.gz.tbi", sample=SAMPLES),
 		expand('workproband/ProbeCoverageRefPanel/{ref_sample}.probe.rpm_rate.bed.gz', ref_sample=REF_SAMPLES),
-                expand('workproband/ProbeCoverageRefPanel/{ref_sample}.probe.rpm_rate.bed.gz.tbi', ref_sample=REF_SAMPLES),
+		expand('workproband/ProbeCoverageRefPanel/{ref_sample}.probe.rpm_rate.bed.gz.tbi', ref_sample=REF_SAMPLES),
 		expand("workproband/AdjZscore/{sample}.adj_z.bed.gz", sample=SAMPLES),
 		expand("workproband/AdjZscore/{sample}.adj_z.bed.gz.tbi", sample=SAMPLES),
 		"workproband/MergedAdjZscore/adj_scores.bed.gz",
@@ -57,7 +57,8 @@ rule all:
 		expand("workproband/PlotsComplete/{num}.done",num=NUM_CALLS),
 		expand("workproband/AdjZscoreRefPanel/{ref_sample}.adj_z.bed.gz", ref_sample=REF_SAMPLES),
 		expand("workproband/AdjZscoreRefPanel/{ref_sample}.adj_z.bed.gz.tbi", ref_sample=REF_SAMPLES),
-		expand("workproband/AlleleCount/{sample}.allele_count.tsv", sample=SAMPLES)
+		expand("workproband/AlleleCount/{sample}.allele_count.tsv", sample=SAMPLES),
+		"workproband/PlotsComplete/all.done"
 
 
 rule mosdepth:
@@ -427,3 +428,16 @@ rule collect_allele_counts:
 	resources:
 		mem_mb=20000
 	shell: "mkdir -p workproband/AlleleCount; touch {output}"
+
+rule collect_plots:
+	input:
+		expand("workproband/PlotsComplete/{num}.done",num=NUM_CALLS),
+	output:
+		outputdir=directory(config['outputdir']),
+		indicator="workproband/PlotsComplete/all.done"
+	shell:
+		"""
+		mkdir -p {output.outputdir}
+		cp workproband/Plots/* {output.outputdir}
+		touch {output.indicator}
+		"""
