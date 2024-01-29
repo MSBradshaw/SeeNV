@@ -1,4 +1,4 @@
-<p align="center"><img src="https://github.com/MSBradshaw/SeeNV/blob/main/Imgs/seenv.png?raw=true" width="80%"/></p>
+<p align="center"><img src="https://github.com/MSBradshaw/SeeNV/blob/main/Imgs/SeeNVLogoBlue.png?raw=true" width="80%"/></p>
 
 <p align="center"><img src="https://github.com/MSBradshaw/SeeNV/blob/main/Imgs/dup.png?raw=true" width="80%"/></p>
 
@@ -97,6 +97,7 @@ Parameters to accompany --plotsamples, -p:
     -t THREADS         (optional) number of threads to use, default 1 (you really want to use more than 1)
     -v varDB           (required) path to a GZipped bed file for the varDB common variants with an accompanying tabix indexed
     -m RepeatMasker    (required) path to a GZipped bed file for the RepeatMasker elements with an accompanying tabix indexed
+    -q Site Quality    (optional) index of the column in the sites file that contains the site quality statement, default None
 
 Parameters to accompany --buildref, -b
     -i INPUT_SAMPLES  (required) samples list
@@ -125,6 +126,10 @@ BAI: path to the sample's .bai file
 ## `-s SITES`
 
 [BED](https://genome.ucsc.edu/FAQ/FAQformat.html#format1) formatted file with sites of interest within the genome. We use the regions our probes target for whole exome sequencing. See `Example/probes.bed`
+
+## -q Site Quality    
+
+(optional) the index of the column in the sites file that contains the site quality statement, default None. You can add an additional column to your sites bed file, in this column you can label probes as "Good" (case insensitive) if it is a probe/site that passes your own quality control metrics. This information will be used to populate the probe quality bar under the main plots. Non "Good" strings are treated equivalently as not-good.
 
 ## `-c CALLS `
 

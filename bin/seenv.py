@@ -2,6 +2,57 @@
 import argparse
 import sys
 import os
+import gzip
+
+def check_sample_list_format(filename):
+    with open(filename,'r') as f:
+        for line in f:
+            if line[0] == '#':
+                continue
+            row = line.strip().split('\t')
+            if len(row) != 5:
+                print('SeeNV Error: samples list must have 5 columns')
+                exit(1)
+            if not os.path.exists(row[3]):
+                print('SeeNV Error: sample file does not exist: {}'.format(row[3]))
+                exit(1)
+            if not os.path.exists(row[4]):
+                print('SeeNV Error: sample index file does not exist: {}'.format(row[4]))
+                exit(1)
+            # ensure the suffix for 3 is .bam and 4 is .bai
+            if row[3][-4:] != '.bam':
+                print('SeeNV Error: sample file must have suffix .bam: {}'.format(row[3]))
+                exit(1)
+            if row[4][-4:] != '.bai':
+                print('SeeNV Error: sample index file must have suffix .bai: {}'.format(row[4]))
+                exit(1)
+
+def assert_probe_sets_are_same(ref_db,probes):
+    # get the first bed.gz file in ReferenceDB/AdjZscore/
+    bgz = None
+    for f in os.listdir(ref_db+'/AdjZscore/'):
+        if '.bed.gz' in f and 'tbi' not in f:
+            bgz = f
+            break
+    
+    # read lines in bgz, get a list of all probes
+    ref_probes = set()
+    with gzip.open(ref_db+'/AdjZscore/'+bgz,'rt') as f:
+        for l in f:
+            row = l.strip().split('\t')
+            ref_probes.add('\t'.join(row[0:3]))
+    # get the probes in the probes file
+    proband_probes = set()
+    with open(probes,'r') as f:
+        for l in f:
+            row = l.strip().split('\t')
+            proband_probes.add('\t'.join(row[0:3]))
+    # compare the two sets
+    if len(ref_probes) != len(proband_probes):
+        print('SeeNV Error: the number of probes in the proband probes file and the reference database probes file are not the same. They are likely not the same set of probes.')
+        exit(1)
+
+            
 
 def get_args():
     help_message ="""
@@ -22,6 +73,7 @@ def get_args():
             -t THREADS         (optional) number of threads to use, default 1 (you really want to use more than 1)
             -v varDB           (required) path to a GZipped bed file for the varDB common variants with an accompanying tabix indexed
             -m RepeatMasker    (required) path to a GZipped bed file for the RepeatMasker elements with an accompanying tabix indexed
+            -q Site Quality    (optional) index of the column in the sites file that contains the site quality score, default None
 
         Parameters to accompany --buildref, -b
             -i INPUT_SAMPLES  (required) samples list
@@ -68,6 +120,7 @@ def get_plot_args():
     parser.add_argument('-t',dest='threads',help='number of threads to use, default 1 (you really want to use more than 1)',default="1",required=False)
     parser.add_argument('-v',dest='vardb',help='path to bed file containing varDB common variants',required=True)
     parser.add_argument('-m',dest='repeat_masker',help='path to bed file containing repeatMasker',required=True)
+    parser.add_argument('-q',dest='site_quality',help='index of the column in the sites file that contains the site quality score, default -1 to ignore this parameter',default=-1,required=False)
     return parser.parse_args()
 
 def get_build_args():
@@ -86,7 +139,11 @@ def get_build_args():
     return parser.parse_args()
 
 run_type, args = get_args()
+
+check_sample_list_format(args.input_samples)
+
 if run_type == 'plotsamples':
+    assert_probe_sets_are_same(args.ref_db,args.sites)
     command="""
     conda_loc=$(which python)
     conda_bin=$(dirname $conda_loc)
@@ -126,7 +183,7 @@ if run_type == 'plotsamples':
     echo $refpanel > workproband/reference_panel.txt
     
     # start the snakemake pipeline now they input files are in there proper locations
-    snakemake -c $threads -s $conda_bin/run_proband.smk --configfile $conda_bin/proband_config.json --printshellcmds --rerun-incomplete --restart-times 3
+    snakemake -c $threads -s $conda_bin/run_proband.smk --configfile $conda_bin/proband_config.json --printshellcmds --rerun-incomplete --restart-times 3 --config site_quality={site_quality}
     """
     command = command.format(samples=args.input_samples,
                     probes=args.sites,
@@ -136,6 +193,7 @@ if run_type == 'plotsamples':
                     af=args.gnomad,
                     threads=args.threads,
 		    repeat_masker=args.repeat_masker,
+            site_quality=args.site_quality,
 		    vardb=args.vardb)
 
 elif run_type == 'buildref':
