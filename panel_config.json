@@ -1,4 +1,6 @@
 {
-  'probes':'workpanel/Probes/probes.original.bed',
-  'all_calls':'workpanel/Calls/all.calls.original.txt'
+  'probes':'Probes/probes.original.bed',
+  'all_calls':'Calls/all.calls.original.txt',
+  'samples':'panel.samples',
+  'probes':'Probes/probes.original.bed'
 }
