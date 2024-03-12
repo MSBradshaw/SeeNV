@@ -2,17 +2,13 @@
 
 <p align="center"><img src="https://github.com/MSBradshaw/SeeNV/blob/main/Imgs/dup.png?raw=true" width="80%"/></p>
 
-SeeNV is still being developed. It can be downloaded and used but is by no means exhaustively tested. 
+SeeNV is a tool for visualizing and assessing the technical evidence behind a copy number variation (CNV) call identified in whole exome sequencing data.
+For each CNV in the input, SeeNV generates an infographic with statistics about the normalized coverage, controlling for variation within individual samples, a reference database of samples, and the sequencing batch. Additionally, it includes information about the abundance of the call in the wider population and information about the complexity and variability of coverage in that region of the genome.
+Using SeeNV you can rapidly and reliably assess the validitity of CNV calls, we found onaverage a user needs only 7.5 seconds to determine if a call is real based on the infographs and achieves 0.93 precision and 0.72 recall.
 
 Find a bug? Create an [issue](https://github.com/MSBradshaw/SeeNV/issues)! 
 
 Have a feature idea? Create an [issue](https://github.com/MSBradshaw/SeeNV/issues)!
-
-SeeNV provides comprehensive yet easy-to-digest visualizations for each call in a sample and depicts relevant statistics comparing a sample to a cohort of other samples. 
-It is known that the accuracy and reliability of CNV calls increase when using multiple callers and parameter sets, for this reason, SeeNV also provides a way to visualize multiple callers or bin sizes simultaneously — a feature not known to exist in other tools. 
-Combined with the tool [PlotCritic](https://github.com/jbelyeu/PlotCritic), we found that a clinician can accurately filter through roughly 200 calls in 20 minutes, or just 6 seconds per call on average. 
-SeeNV is a command line tool that can be run on its own or added to your variant calling pipelines.
-
 
 # Installation
 
@@ -46,7 +42,7 @@ As long as the conda environment is activated the `seenv` command can now be use
 
 # Usage
 
-SeeNV requires its conda environment in order to work, start the conda environment:
+SeeNV requires its conda environment to work, start the conda environment:
 
 `conda activate seenv`
 
