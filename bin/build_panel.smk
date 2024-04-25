@@ -1,6 +1,6 @@
 import pandas as pd
 
-tempdir = 'workproband'
+tempdir = 'workpanel'
 if 'workdir' in config:
 	tempdir = config['workdir']
 if tempdir[-1] != '/':
