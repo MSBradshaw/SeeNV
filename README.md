@@ -107,7 +107,7 @@ Parameters to accompany --buildref, -b
 
 ## `-i INPUT_SAMPLES`
 
-Same format for samples and reference panel. See `Example/panel.samples` or `Example/cohort.samples`
+Same format for samples and reference panel. See `Example/ref_sample_list.tsv` or `Example/proband_sample_list.tsv`
 
 TSV file with the following columns in this order:
 
@@ -131,7 +131,7 @@ BAI: absolute path to the sample's .bai file
 
 ## `-c CALLS `
 
-See example `ExampleData/17_bi_300_samples_calls.dup.bed`
+See example `ExampleData/17_bi_300_samples_calls.bed`
 
 Bed file with the following information separated by tabs:
 
