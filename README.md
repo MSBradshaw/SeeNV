@@ -117,9 +117,9 @@ Sample Id: Unique identifier for each sample (can be the same as the sample's Pa
 
 Sex: Chromosomal sex of patient (e.g. XY or XX). If unknown just input ZZ.
 
-BAM: path to the sample's .bam file
+BAM: absolute path to the sample's .bam file
 
-BAI: path to the sample's .bai file
+BAI: absolute path to the sample's .bai file
 
 ## `-s SITES`
 
