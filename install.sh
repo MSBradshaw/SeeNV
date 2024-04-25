@@ -21,7 +21,7 @@ wget https://github.com/brentp/gargs/releases/download/v0.3.9/gargs_linux
 chmod 770 gargs_linux
 mv gargs_linux $CONDA_PREFIX/bin/gargs
 
-cp bin/seenv.py $CONDA_PREFIX/bin/seenv
+cp bin/seenv $CONDA_PREFIX/bin/seenv
 cp bin/build_panel.smk $CONDA_PREFIX/bin/build_panel.smk
 cp bin/run_proband.smk $CONDA_PREFIX/bin/run_proband.smk
 cp panel_config.json $CONDA_PREFIX/bin/panel_config.json
