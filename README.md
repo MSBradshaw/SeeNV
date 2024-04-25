@@ -48,7 +48,9 @@ SeeNV requires its conda environment to work, start the conda environment:
 
 ## Build a Reference DB
 
-In order to generate plots, a reference panel database is required. You can either create your own or use the one included in this repository.
+In order to generate plots, a reference panel database is required. You can either create your own or use the one included in this repository. 
+
+Note: If running the example besure to download the 1000 Genomes Project samples using `ExampleData/download_1KG_samples.sh` ([aws cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) required) and change the paths in `ExampleData/ref_panel_sample_list.tsv` to point to the proper locations.
 
 ```
 seenv \
