@@ -57,7 +57,7 @@ seenv \
 -b \
 -i ExampleData/ref_panel_sample_list.tsv \
 -s ExampleData/SureSelect_All_Exon_V2.bed \
--c ExampleData/17_bi_300_samples_calls.txt \
+-c ExampleData/17_bi_300_samples_calls.bed \
 -o ReferenceDB \
 -t 32
 ```
@@ -69,7 +69,7 @@ seenv \
 -p \
 -i ExampleData/proband_sample_list.tsv \
 -s ExampleData/SureSelect_All_Exon_V2.bed \
--c ExampleData/17_bi_300_samples_calls.txt \
+-c ExampleData/17_bi_300_samples_calls.bed \
 -a ExampleData/gnomad_v2.1_sv.sites.bed.gz \
 -t 64 \
 -v ExampleData/vardb.sorted.bed.gz \
